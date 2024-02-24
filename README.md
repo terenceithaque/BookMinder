@@ -1,0 +1,1 @@
+BookMinder est une application écrite en Python pour noter vos différentes lectures au fil du temps.
