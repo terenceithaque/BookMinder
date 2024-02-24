@@ -1,6 +1,7 @@
 # Script pour ajouter une lecture
 from tkinter import * # Importation de tkinter pour l'interface graphique
 from tkinter import filedialog # Importation du module filedialog de tkinter pour dialoguer avec les fichiers
+from tkinter import messagebox
 from resume import * 
 
 
@@ -31,4 +32,82 @@ class FenetreAjouter(Toplevel):
 
         self.auteur_livre = Entry(self)  # Entrée pour saisir le nom de l'auteur(e) du livre
         self.auteur_livre.pack(fill="both")
+
+        self.resume_manuel = False # Variable pour savoir si l'utilisateur souhaite entrer manuellement le résumé du livre
+
+        self.resume_auto = False # Variable pour savoir s'il faut faire un résumé automatique ou non
+
+        self.bouton_resume_manuel = Button(self, text="Entrer un résumé du livre manuellement", command=self.ajouter_champ_resume) # Bouton pour permettre à l'utilisateur de saisir son propre résumé du livre
+
+        self.bouton_resume_manuel.pack()
+
+        self.checkbutton_resume_auto = Checkbutton(self, text="Faire un résumé automatiquement", variable=self.resume_auto, command=self.champ_resume_auto) # Bouton pouvant être coché si l'utilisateur veut que le résumé soit fait automatiquement
+
+
+        self.checkbutton_resume_auto.pack()
+
+        self.langue_selectionnee = StringVar(self) # Langue du titre sélectionnée par l'utilisateur
+
+        self.langue_selectionnee.set("Anglais (en)")
+
+        options = ["Anglais (en)", "Français (fr)", "Espagnol (es)", "Italien (it)", "Japonais (ja)", "Arabe (ar)", "Estonien (est)"] # Liste des langues que l'utilisateur peut choisir pour le tire du livre
+        
+
+        self.label_langue = Label(self, text="Langue du titre du livre :")
+        self.label_langue.pack(fill="both")
+
+
+        self.menu_langue = OptionMenu(self, self.langue_selectionnee, *options) # Menu d'options pour sélectionner la langue du titre
+        self.menu_langue.pack()
+
+        
+
+
+        self.n_champs_resume = 0 # Nombre champs de texte pour le résumé créés par l'utilisateur. S'il est au dessus de 1, on arrête d'en créer.
+
+
+    def ajouter_champ_resume(self):
+        "Faire apparaître un champ de texte pour permettre à l'utilisateur d'entrer un résumé de sa lecture"
+        self.resume_manuel = True # On veut écrire un résumé manuellement, donc on passe la variable correspondante sur True
+        if self.resume_manuel:
+            self.desactiver_bouton(self.checkbutton_resume_auto) # On désactive le bouton de résumé auto
+
+        if self.n_champs_resume < 1: # Si aucun champ de résumé n'a encore été créé
+            self.champ_resume = Text(self) # Champ de texte pour le résumé
+            self.champ_resume.pack(fill="both") 
+
+            self.n_champs_resume += 1
+
+
+    def champ_resume_auto(self):
+        "Résumé automatique"
+        self.resume_auto = True
+        if self.resume_auto == True:
+            self.desactiver_bouton(self.bouton_resume_manuel) # On désactive le bouton pour le résumé manuel
+
+        self.champ_resume_auto = Text(self) # Champ de texte pour le résumé auto
+        titre_livre = self.titre_livre.get() # On obtient
+        if titre_livre == "": # Si l'utilisateur n'a fourni aucun titre pour le livre
+            raise Exception(messagebox.showerror("Aucun titre n'a été fourni", "Vous n'avez fourni aucun titre pour le livre")) # On indique à l'utilisateur qu'il n'a fourni aucun titre
+
+        else: # Si l'utilisateur a fourni un titre
+            langues = ["en", "fr", "es", "it", "ja", "ar", "est"] # Codes des différentes langues proposées
+            for code in langues:
+                if code in self.langue_selectionnee.get():
+                    resume = extraire_resume(titre_livre, langue=code) # On obtient le résumé avec le titre du livre et la langue spécifiée par l'utilisateur
+                    self.champ_resume_auto.insert("end", resume) # On insère le résumé
+                    self.champ_resume_auto.pack(fill="both")
+
+
+
+
+
+             
+
+
+    def desactiver_bouton(self, bouton):
+        "Désactiver un bouton"
+        bouton.config(state=DISABLED)    
+
+
 
