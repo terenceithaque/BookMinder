@@ -35,7 +35,7 @@ def enregistrer_lecture(titre_livre, annee_livre, auteur_livre, langue_titre, re
             "resume":resume_livre
         } # On stocke toutes les données fournies par l'utilisateur concernant le livre
 
-    with open(chemin_fichier, "w") as jsfile: # On écrit dans le fichier JSON nouvellement créé
-        json.dump(donnees_livre, jsfile, ensure_ascii=True) # On écrit les données concernant le livre
+    with open(chemin_fichier, "w", encoding="utf-8") as jsfile: # On écrit dans le fichier JSON nouvellement créé
+        json.dump(donnees_livre, jsfile, ensure_ascii=False) # On écrit les données concernant le livre
 
     
