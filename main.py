@@ -30,8 +30,17 @@ class Application(Tk):
                 self.bouton_ajouter_lecture.pack()
 
 
-                
+            else:
+                Label(self, text="Vos lectures :").pack(fill="both")
+                self.lectures = Listbox(self) # Listbox contenant toutes les lectures ajoutées par l'utilisateur
+                for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
+                    if fichier.startswith("chemin_"): # Si le nom du fichier commence par "chemin_"
+                       f = open(f"paths/{fichier}", "r") # On veut lire le contenu du fichier
+                       titre_livre = os.path.basename(f.read()) # On extrait le titre du livre depuis le chemin contenu dans le fichier texte
+                       self.lectures.insert(END, titre_livre)
+                       f.close() # On ferme le fichier texte
 
+                self.lectures.pack(fill="both", expand=True)
 
 app = Application() # On crée une nouvelle instance d'application
 
