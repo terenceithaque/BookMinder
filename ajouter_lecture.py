@@ -77,6 +77,14 @@ class FenetreAjouter(Toplevel):
 
         self.n_champs_resume = 0 # Nombre champs de texte pour le résumé créés par l'utilisateur. S'il est au dessus de 1, on arrête d'en créer.
 
+        self.titre_livre.bind("<KeyRelease>", self.saisie_titre_livre) 
+
+
+    def saisie_titre_livre(self, event) :
+        "Gérer le changement du titre de la fenêtre principale quand l'utilisateur saisit le titre du livre"
+        self.fenetre_maitre.titre(self.titre_livre.get())
+        self.title(self.titre_livre.get())
+
 
     def ajouter_champ_resume(self):
         "Faire apparaître un champ de texte pour permettre à l'utilisateur d'entrer un résumé de sa lecture"
@@ -88,6 +96,8 @@ class FenetreAjouter(Toplevel):
             self.champ_resume.pack(fill="both") 
 
             self.n_champs_resume += 1
+
+           
 
 
     def champ_resume_auto(self, event=None):

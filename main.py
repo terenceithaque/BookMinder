@@ -42,6 +42,10 @@ class Application(Tk):
 
                 self.lectures.pack(fill="both", expand=True)
 
+    def titre(self, titre):
+        "Changer le titre de la fenêtre"
+        self.title(titre)            
+
 app = Application() # On crée une nouvelle instance d'application
 
 app.mainloop() # On exécute la boucle principale
