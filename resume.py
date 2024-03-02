@@ -1,9 +1,11 @@
 # Script pour chercher le résumé d'un livre lu
 import newspaper # Importation du module newspaper
+import urllib.parse
+from tkinter import messagebox
 
 
 
-url = "https://www.wikiwand.com" # URL à partir de laquelle on extraiera le résumé du livre
+url = "wikipedia.org/wiki/" # URL à partir de laquelle on extraiera le résumé du livre
 
 
 def titre_en_url(titre):
@@ -23,14 +25,25 @@ def titre_en_url(titre):
 
 def extraire_resume(titre, langue):
     "Extraire le résumé d'un livre à partir de son titre"
-    url_resume = url + "/" + langue + "/" + titre_en_url(titre) # On forme l'url complète pour l'extraction du résumé à partir de la variable url + un slash + la langue du titre +  le titre converti conformément
+
+    try:
+
+        titre = titre.encode("utf-8").decode("utf-8")
+        print(titre_en_url(titre))
+        url_resume = "https://" + langue + "." + url + titre_en_url(titre)
+        url_encodee = urllib.parse.quote(url_resume, safe=":/")
+        print("Url encodée :", url_encodee)
     
-    article = newspaper.Article(url_resume) # On crée un nouvel objet Article à partir de l'URL
-    article.download() # On télécharge le contenu HTMl de l'article
-    article.parse()
+        article = newspaper.Article(url_encodee) # On crée un nouvel objet Article à partir de l'URL
+        article.download() # On télécharge le contenu HTMl de l'article
+        article.parse()
 
-    print(article.text) # On affiche le résumé du livre
+        print(article.text) # On affiche le résumé du livre
 
-    return article.text
+        return article.text
+    
+
+    except newspaper.article.ArticleException: # Si une erreur survient lors de l'obtention du résumé
+        messagebox.showerror(f"Le livre '{titre}' est introuvable", f"Aucun résultat pour '{titre}'. Il se peut que le titre fourni soit inccorect.")
 
 

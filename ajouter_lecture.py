@@ -33,19 +33,6 @@ class FenetreAjouter(Toplevel):
         self.auteur_livre = Entry(self)  # Entrée pour saisir le nom de l'auteur(e) du livre
         self.auteur_livre.pack(fill="both")
 
-        self.resume_manuel = False # Variable pour savoir si l'utilisateur souhaite entrer manuellement le résumé du livre
-
-        self.resume_auto = False # Variable pour savoir s'il faut faire un résumé automatique ou non
-
-        self.bouton_resume_manuel = Button(self, text="Entrer un résumé du livre manuellement", command=self.ajouter_champ_resume) # Bouton pour permettre à l'utilisateur de saisir son propre résumé du livre
-
-        self.bouton_resume_manuel.pack()
-
-        self.checkbutton_resume_auto = Checkbutton(self, text="Faire un résumé automatiquement", variable=self.resume_auto, command=self.champ_resume_auto) # Bouton pouvant être coché si l'utilisateur veut que le résumé soit fait automatiquement
-
-
-        self.checkbutton_resume_auto.pack()
-
         self.langue_selectionnee = StringVar(self) # Langue du titre sélectionnée par l'utilisateur
 
         self.langue_selectionnee.set("Anglais (en)")
@@ -59,6 +46,25 @@ class FenetreAjouter(Toplevel):
 
         self.menu_langue = OptionMenu(self, self.langue_selectionnee, *options) # Menu d'options pour sélectionner la langue du titre
         self.menu_langue.pack()
+
+        self.resume_manuel = False # Variable pour savoir si l'utilisateur souhaite entrer manuellement le résumé du livre
+
+
+        self.bouton_resume_manuel = Button(self, text="Entrer un résumé du livre manuellement", command=self.ajouter_champ_resume) # Bouton pour permettre à l'utilisateur de saisir son propre résumé du livre
+
+        self.bouton_resume_manuel.pack()
+
+        self.etat_checkbutton_resume_auto = IntVar() # Variable pour stocker l'état du checkbutton créé ci-dessous
+
+        self.etat_checkbutton_resume_auto.trace_add("write", self.champ_resume_auto)
+        self.checkbutton_resume_auto = Checkbutton(self, text="Faire un résumé automatiquement", variable=self.etat_checkbutton_resume_auto, command=self.champ_resume_auto) # Bouton pouvant être coché si l'utilisateur veut que le résumé soit fait automatiquement
+
+
+        self.checkbutton_resume_auto.pack()
+
+        
+
+        
 
         
 
@@ -85,8 +91,10 @@ class FenetreAjouter(Toplevel):
         if self.resume_auto == True:
             self.desactiver_bouton(self.bouton_resume_manuel) # On désactive le bouton pour le résumé manuel
 
-        self.champ_resume_auto = Text(self) # Champ de texte pour le résumé auto
-        titre_livre = self.titre_livre.get() # On obtient
+        if self.etat_checkbutton_resume_auto.get() == 1: # Si le bouton pour le résumé auto est coché
+            self.champ_resume_auto = Text(self) # Champ de texte pour le résumé auto
+
+        titre_livre = self.titre_livre.get() # On obtient le titre du livre
         if titre_livre == "": # Si l'utilisateur n'a fourni aucun titre pour le livre
             raise Exception(messagebox.showerror("Aucun titre n'a été fourni", "Vous n'avez fourni aucun titre pour le livre")) # On indique à l'utilisateur qu'il n'a fourni aucun titre
 
