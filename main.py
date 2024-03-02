@@ -41,6 +41,7 @@ class Application(Tk):
                        f.close() # On ferme le fichier texte
 
                 self.lectures.pack(fill="both", expand=True)
+                
 
     def titre(self, titre):
         "Changer le titre de la fenêtre"
