@@ -1,6 +1,7 @@
 # Script principal
 from tkinter import * # Importation de tkinter pour l'interface graphique
 from ajouter_lecture import *
+import os
 
 class Application(Tk):
     "Classe représentant une instance de l'application. Elle hérite de la classe Tk de tkinter"
@@ -21,6 +22,15 @@ class Application(Tk):
         self.barre_menus.add_cascade(label="Lecture", menu=self.menu_lecture) # On insère le menu lecture dans la barre de menus
 
         self.config(menu = self.barre_menus) # On configure le menu de la fenêtre comme étant la barre de menus qu'on a créée
+
+        if os.path.exists("paths"): # Si le dossier paths existe
+            if os.listdir("paths") == []: # Si le dossier paths est vide, alors on considère qu'aucune lecture n'a été enregistrée
+                Label(self, text="Vous n'avez enregistré(e) aucune lecture.").pack(fill="both") # On affiche un texte pour avertir l'utilisateur qu'il n'a enregistré aucune lecture
+                self.bouton_ajouter_lecture = Button(self, text="Ajouter une nouvelle lecture...", command=lambda:FenetreAjouter(self)) # On ajoute un bouton pour permettre à l'utilisateur d'ajouter une nouvelle lecture
+                self.bouton_ajouter_lecture.pack()
+
+
+                
 
 
 app = Application() # On crée une nouvelle instance d'application
