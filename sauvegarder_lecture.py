@@ -23,4 +23,19 @@ def enregistrer_lecture(titre_livre, annee_livre, auteur_livre, langue_titre, re
     chemin_fichier = filedialog.asksaveasfilename(title="Où voulez-vous enregistrer votre lecture ?", filetypes=[("Base de données JSON", "*.json")]) # Demander à l'utilisateur où est-ce qu'il veut enregistrer le fichier JSON
     creer_fichier_chemin(titre_livre, chemin_fichier) # Créer un fichier texte contenant le chemin du fichier JSON nouvellement créé
 
+
+    if not chemin_fichier.endswith(".json"): # Si le fichier n'est pas au format .json
+        chemin_fichier += ".json"
+    if chemin_fichier:
+        donnees_livre = {
+            "titre": titre_livre,
+            "annee":annee_livre,
+            "auteur":auteur_livre,
+            "langue":langue_titre,
+            "resume":resume_livre
+        } # On stocke toutes les données fournies par l'utilisateur concernant le livre
+
+    with open(chemin_fichier, "w") as jsfile: # On écrit dans le fichier JSON nouvellement créé
+        json.dump(donnees_livre, jsfile, ensure_ascii=True) # On écrit les données concernant le livre
+
     
