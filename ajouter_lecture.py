@@ -3,6 +3,7 @@ from tkinter import * # Importation de tkinter pour l'interface graphique
 from tkinter import filedialog # Importation du module filedialog de tkinter pour dialoguer avec les fichiers
 from tkinter import messagebox
 from resume import * 
+from sauvegarder_lecture import *
 
 
 class FenetreAjouter(Toplevel):
@@ -62,9 +63,14 @@ class FenetreAjouter(Toplevel):
 
         self.checkbutton_resume_auto.pack()
 
+        self.champ_resume = Text(self) # Champ de résumé du livre
+
+
+        self.bouton_enregistrer_lecture = Button(self, text="Enregistrer la lecture...", command=lambda:enregistrer_lecture(self.titre_livre.get(), 
+                                                self.annee_livre.get(), self.auteur_livre.get(), self.langue_selectionnee, self.champ_resume.get("1.0", END))) # Bouton pour enregistrer la lecture
         
 
-        
+        self.bouton_enregistrer_lecture.pack()
 
         
 
@@ -79,20 +85,19 @@ class FenetreAjouter(Toplevel):
             self.desactiver_bouton(self.checkbutton_resume_auto) # On désactive le bouton de résumé auto
 
         if self.n_champs_resume < 1: # Si aucun champ de résumé n'a encore été créé
-            self.champ_resume = Text(self) # Champ de texte pour le résumé
             self.champ_resume.pack(fill="both") 
 
             self.n_champs_resume += 1
 
 
-    def champ_resume_auto(self):
+    def champ_resume_auto(self, event=None):
         "Résumé automatique"
         self.resume_auto = True
         if self.resume_auto == True:
             self.desactiver_bouton(self.bouton_resume_manuel) # On désactive le bouton pour le résumé manuel
 
         if self.etat_checkbutton_resume_auto.get() == 1: # Si le bouton pour le résumé auto est coché
-            self.champ_resume_auto = Text(self) # Champ de texte pour le résumé auto
+            self.champ_resume.pack(fill="both")
 
         titre_livre = self.titre_livre.get() # On obtient le titre du livre
         if titre_livre == "": # Si l'utilisateur n'a fourni aucun titre pour le livre
@@ -103,8 +108,8 @@ class FenetreAjouter(Toplevel):
             for code in langues:
                 if code in self.langue_selectionnee.get():
                     resume = extraire_resume(titre_livre, langue=code) # On obtient le résumé avec le titre du livre et la langue spécifiée par l'utilisateur
-                    self.champ_resume_auto.insert("end", resume) # On insère le résumé
-                    self.champ_resume_auto.pack(fill="both")
+                    self.champ_resume.insert("end", resume) # On insère le résumé
+                    #self.champ_resume.pack(fill="both")
 
 
 

@@ -1,0 +1,1 @@
+<_io.TextIOWrapper name='C:/Données/Térence/Les guerres de Lucas' mode='w' encoding='cp1252'>
