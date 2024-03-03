@@ -2,6 +2,8 @@
 from tkinter import * # Importation de tkinter pour l'interface graphique
 from ajouter_lecture import *
 import os
+from editeur import * 
+import keyboard
 
 class Application(Tk):
     "Classe représentant une instance de l'application. Elle hérite de la classe Tk de tkinter"
@@ -17,9 +19,19 @@ class Application(Tk):
 
         self.menu_lecture = Menu(self.barre_menus, tearoff=0) # On ajoute un menu lecture à la barre de menus. Il sert entre autre à ajouter un livre lu.
 
-        self.menu_lecture.add_command(label="Nouvelle lecture...", command=lambda:FenetreAjouter(self)) # On ajoute une commande qui permet d'ajouter un livre dans les lectures au menu lecture
+        self.menu_lecture.add_command(label="Nouvelle lecture... Ctrl + N", command=lambda:FenetreAjouter(self)) # On ajoute une commande qui permet d'ajouter un livre dans les lectures au menu lecture
+
+        keyboard.add_hotkey("Ctrl + N", lambda:FenetreAjouter(self))
+
+
+        
 
         self.barre_menus.add_cascade(label="Lecture", menu=self.menu_lecture) # On insère le menu lecture dans la barre de menus
+
+        self.menu_editeur = Menu(self, tearoff=0) # Menu "Editeur"
+        self.menu_editeur.add_command(label="Ouvrir l'éditeur de lecture", command=lambda:Editeur())  # Commande pour lancer une nouvelle instance de l'éditeur de lectures
+        
+        self.barre_menus.add_cascade(label="Editeur", menu=self.menu_editeur)
 
         self.config(menu = self.barre_menus) # On configure le menu de la fenêtre comme étant la barre de menus qu'on a créée
 
@@ -41,7 +53,7 @@ class Application(Tk):
                        f.close() # On ferme le fichier texte
 
                 self.lectures.pack(fill="both", expand=True)
-                
+
 
     def titre(self, titre):
         "Changer le titre de la fenêtre"
