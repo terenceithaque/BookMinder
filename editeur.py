@@ -26,7 +26,7 @@ class Editeur(Tk):
                 f = open(f"paths/{fichier}", "r") # On veut lire le chemin contenu dans le fichier
                 chemin_fichier_lecture = f.read() # Lire le fichier texte ouvert pour obtenir le chemin conduisant vers un fichier JSON représentant une lecture
                 chemin_fichier_lecture += ".json" # On ajoute l'extension du fichier JSON
-                self.menu_lectures_recentes.add_command(label=chemin_fichier_lecture, command=lambda:Editeur().ouvrir_fichier(dialogue=False, nom_fichier=chemin_fichier_lecture))  # On ajoute un bouton pour ouvrir le fichier JSON correspondant dans un nouvel éditeur
+                self.menu_lectures_recentes.add_command(label=chemin_fichier_lecture, command=lambda chemin_fichier=chemin_fichier_lecture:self.ouvrir_fichier(dialogue=False, nom_fichier=chemin_fichier))  # On ajoute un bouton pour ouvrir le fichier JSON correspondant dans un nouvel éditeur
 
         self.menu_fichier.add_cascade(label="Lectures récentes", menu=self.menu_lectures_recentes)    
 
@@ -55,6 +55,8 @@ class Editeur(Tk):
         if dialogue == False: # Si on ne doit pas afficher de dialogue
             try :
                 if nom_fichier: 
+                    if ".json" not in nom_fichier:
+                        nom_fichier += ".json"
                     with open(nom_fichier, "r", encoding="utf-8") as f: # On ouvre le fichier JSON en lecture
                         donnees = json.load(f) # On charge le fichier JSON en mémoire
                         print(donnees)
@@ -76,8 +78,8 @@ class Editeur(Tk):
         self.title(f"{os.path.basename(nom_fichier)} - Editeur de lecture")             
 
 
-edit = Editeur()
+#edit = Editeur()
 #edit.ouvrir_fichier(dialogue=False, nom_fichier=r"C:\Données\Térence\198.json")
-edit.mainloop()                           
+#edit.mainloop()                           
 
 

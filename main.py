@@ -49,10 +49,39 @@ class Application(Tk):
                     if fichier.startswith("chemin_"): # Si le nom du fichier commence par "chemin_"
                        f = open(f"paths/{fichier}", "r") # On veut lire le contenu du fichier
                        titre_livre = os.path.basename(f.read()) # On extrait le titre du livre depuis le chemin contenu dans le fichier texte
+                       titre_fichier = fichier[7:] # Titre du livre comme il est contenu dans le fichier
+                       titre_livre = titre_fichier
+                       titre_livre = titre_livre.replace(".txt", "")
+                               
+                               
+
+                                        
+                           
+                           
                        self.lectures.insert(END, titre_livre)
                        f.close() # On ferme le fichier texte
 
                 self.lectures.pack(fill="both", expand=True)
+
+                self.lectures.bind("<Double-1>", self.ouvrir_lecture)
+
+    def ouvrir_lecture(self, event):
+        "Ouvrir une lecture depuis la liste graphique des lectures"
+        selection = self.lectures.nearest(event.y) # On obtient les éléments sélectionnés par la souris dans la Listbox
+        print(selection)
+        titre_clique = self.lectures.get(selection) # Titre sur lequel l'utilisateur a cliqué
+        print("Vous avez cliqué(e) sur", titre_clique)
+        for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
+            print(fichier)
+            
+            if fichier == f"chemin_{titre_clique}.txt": # Si le fichier correspond au titre cliqué
+                print("Le titre cliqué est dans le nom du fichier")
+                with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier texte afin d'y trouver le chemin du fichier à ouvrir
+                    chemin_fichier = f.read() # Chemin du fichier JSON à ouvrir
+                    Editeur().ouvrir_fichier(dialogue=False, nom_fichier=chemin_fichier) # On ouvre le fichier JSON dans une nouvelle instance de l'éditeur
+                    f.close()
+        
+        
 
 
     def titre(self, titre):
