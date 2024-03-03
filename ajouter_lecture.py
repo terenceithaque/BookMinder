@@ -67,7 +67,7 @@ class FenetreAjouter(Toplevel):
 
 
         self.bouton_enregistrer_lecture = Button(self, text="Enregistrer la lecture...", command=lambda:enregistrer_lecture(self.titre_livre.get(), 
-                                                self.annee_livre.get(), self.auteur_livre.get(), str(self.langue_selectionnee), self.champ_resume.get("1.0", END))) # Bouton pour enregistrer la lecture
+                                                self.annee_livre.get(), self.auteur_livre.get(), str(self.langue_selectionnee.get()), self.champ_resume.get("1.0", END))) # Bouton pour enregistrer la lecture
         
 
         self.bouton_enregistrer_lecture.pack()
