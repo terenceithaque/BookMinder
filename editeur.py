@@ -55,13 +55,17 @@ class Editeur(Tk):
         if dialogue == False: # Si on ne doit pas afficher de dialogue
             try :
                 if nom_fichier: 
-                    with open(nom_fichier, "r") as f: # On ouvre le fichier JSON en lecture
+                    with open(nom_fichier, "r", encoding="utf-8") as f: # On ouvre le fichier JSON en lecture
                         donnees = json.load(f) # On charge le fichier JSON en mémoire
                         print(donnees)
                         f.close() # On ferme le fichier JSON 
 
-                        donnees_formatees = json.dumps(donnees, indent=4)   # Données du fichier JSON formattées sous forme de chaîne de caractères normale
+                        donnees_formatees = json.dumps(donnees, indent=4, ensure_ascii=False)   # Données du fichier JSON formattées sous forme de chaîne de caractères normale
 
+
+                        #donnees_formatees = donnees_formatees.decode("utf-8") # On décode les données formattées en utf-8
+
+                        print("Données formattées en utf-8 :", donnees_formatees) 
                         self.champ_texte.insert(END, donnees_formatees)
 
 
