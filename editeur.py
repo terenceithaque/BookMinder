@@ -151,10 +151,10 @@ class Editeur(Tk):
     def enregistrer_sous(self):
         "Enregistrer le contenu du champ de texte dans un nouveau fichier au format JSON"
         try:
-            donnees = self.toJSON(self.champ_texte.get(1.0, END)) # On formate les données contenues dans le champ de texte au format JSON
+            donnees = self.toJSON(self.champ_texte.get(1.0, END))[1] # On formate les données contenues dans le champ de texte au format JSON
             localisation_fichier = filedialog.asksaveasfilename(title="Où souhaitez-vous enregistrer le fichier ?", filetypes=[("Base de données JSON", "*.json")], defaultextension=".json")  # Demander à l'utilisateur où il souhaite enregistrer le fichier
             with open(localisation_fichier, "w") as f: # On ouvre le fichier en écriture
-                f.write(donnees) # On écrit les données
+                json.dump(donnees, f, indent=4)
                 f.close() # On ferme le fichier
 
 
