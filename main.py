@@ -20,11 +20,12 @@ class Application(Tk):
 
         self.menu_lecture.add_command(label="Nouvelle lecture...", command=lambda:FenetreAjouter(self)) # On ajoute une commande qui permet d'ajouter un livre dans les lectures au menu lecture
 
-
-
+        self.menu_lecture.add_command(label="Ouvrir une lecture dans l'éditeur...", command=lambda:self.ouvrir_lecture(from_list=False, event=None))
+        
         
 
         self.barre_menus.add_cascade(label="Lecture", menu=self.menu_lecture) # On insère le menu lecture dans la barre de menus
+
 
         self.menu_editeur = Menu(self, tearoff=0) # Menu "Editeur"
         self.menu_editeur.add_command(label="Ouvrir l'éditeur de lecture", command=lambda:Editeur())  # Commande pour lancer une nouvelle instance de l'éditeur de lectures
@@ -61,23 +62,34 @@ class Application(Tk):
 
                 self.lectures.pack(fill="both", expand=True)
 
-                self.lectures.bind("<Double-1>", self.ouvrir_lecture)
+                self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
 
-    def ouvrir_lecture(self, event):
+    def ouvrir_lecture(self, from_list, event):
         "Ouvrir une lecture depuis la liste graphique des lectures"
-        selection = self.lectures.nearest(event.y) # On obtient les éléments sélectionnés par la souris dans la Listbox
-        print(selection)
-        titre_clique = self.lectures.get(selection) # Titre sur lequel l'utilisateur a cliqué
-        print("Vous avez cliqué(e) sur", titre_clique)
-        for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
-            print(fichier)
+        if from_list: # Si l'utilisateur ouvre une lecture depuis la liste des lectures
+            selection = self.lectures.nearest(event.y) # On obtient les éléments sélectionnés par la souris dans la Listbox
+            print(selection)
+            titre_clique = self.lectures.get(selection) # Titre sur lequel l'utilisateur a cliqué
+            print("Vous avez cliqué(e) sur", titre_clique)
+            for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
+                print(fichier)
             
-            if fichier == f"chemin_{titre_clique}.txt": # Si le fichier correspond au titre cliqué
-                print("Le titre cliqué est dans le nom du fichier")
-                with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier texte afin d'y trouver le chemin du fichier à ouvrir
-                    chemin_fichier = f.read() # Chemin du fichier JSON à ouvrir
-                    Editeur().ouvrir_fichier(dialogue=False, nom_fichier=chemin_fichier) # On ouvre le fichier JSON dans une nouvelle instance de l'éditeur
-                    f.close()
+                if fichier == f"chemin_{titre_clique}.txt": # Si le fichier correspond au titre cliqué
+                    print("Le titre cliqué est dans le nom du fichier")
+                    with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier texte afin d'y trouver le chemin du fichier à ouvrir
+                        chemin_fichier = f.read() # Chemin du fichier JSON à ouvrir
+                        Editeur().ouvrir_fichier(dialogue=False, nom_fichier=chemin_fichier) # On ouvre le fichier JSON dans une nouvelle instance de l'éditeur
+                        f.close()
+
+        else: # Si l'utilisateur veut ouvrir une lecture depuis un autre endroit que la liste
+            Editeur().ouvrir_fichier(dialogue=True) # Créer un nouvel éditeur et ouvrir le fichier dans celui-ci
+
+
+
+
+
+
+
         
         
 
