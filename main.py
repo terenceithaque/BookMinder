@@ -78,11 +78,11 @@ class Application(Tk):
                     print("Le titre cliqué est dans le nom du fichier")
                     with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier texte afin d'y trouver le chemin du fichier à ouvrir
                         chemin_fichier = f.read() # Chemin du fichier JSON à ouvrir
-                        Editeur().ouvrir_fichier(dialogue=False, nom_fichier=chemin_fichier) # On ouvre le fichier JSON dans une nouvelle instance de l'éditeur
+                        Editeur().ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_fichier) # On ouvre le fichier JSON dans une nouvelle instance de l'éditeur
                         f.close()
 
         else: # Si l'utilisateur veut ouvrir une lecture depuis un autre endroit que la liste
-            Editeur().ouvrir_fichier(dialogue=True) # Créer un nouvel éditeur et ouvrir le fichier dans celui-ci
+            Editeur().ouvrir_fichier(event=None, dialogue=True) # Créer un nouvel éditeur et ouvrir le fichier dans celui-ci
 
 
 

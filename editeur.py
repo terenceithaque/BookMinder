@@ -21,7 +21,7 @@ class Editeur(Tk):
 
         self.fichier_existant = False # Variable pour savoir si le fichier ouvert existe ou non
 
-        self.menu_fichier.add_command(label="Ouvrir une lecture...", command=lambda:self.ouvrir_fichier(dialogue=True)) # Commande pour ouvrir un fichier JSON représentant une lecture
+        self.menu_fichier.add_command(label="Ouvrir une lecture...", command=lambda:self.ouvrir_fichier(event=None, dialogue=True)) # Commande pour ouvrir un fichier JSON représentant une lecture
 
         
         
@@ -31,11 +31,11 @@ class Editeur(Tk):
                 f = open(f"paths/{fichier}", "r") # On veut lire le chemin contenu dans le fichier
                 chemin_fichier_lecture = f.read() # Lire le fichier texte ouvert pour obtenir le chemin conduisant vers un fichier JSON représentant une lecture
                 chemin_fichier_lecture += ".json" # On ajoute l'extension du fichier JSON
-                self.menu_lectures_recentes.add_command(label=chemin_fichier_lecture, command=lambda chemin_fichier=chemin_fichier_lecture:Editeur().ouvrir_fichier(dialogue=False, nom_fichier=chemin_fichier))  # On ajoute un bouton pour ouvrir le fichier JSON correspondant dans un nouvel éditeur
+                self.menu_lectures_recentes.add_command(label=chemin_fichier_lecture, command=lambda chemin_fichier=chemin_fichier_lecture:Editeur().ouvrir_fichier(event=None,dialogue=False, nom_fichier=chemin_fichier))  # On ajoute un bouton pour ouvrir le fichier JSON correspondant dans un nouvel éditeur
 
         self.menu_fichier.add_cascade(label="Lectures récentes", menu=self.menu_lectures_recentes) 
 
-        self.menu_fichier.add_command(label="Enregistrer", command=self.enregistrer)
+        self.menu_fichier.add_command(label="Enregistrer Ctrl + S", command=lambda:self.enregistrer(event=None))
 
         self.menu_fichier.add_command(label="Enregistrer sous...", command=self.enregistrer_sous)   
 
@@ -48,9 +48,17 @@ class Editeur(Tk):
 
         self.champ_texte.pack(fill="both", expand=True)
 
-        self.champ_texte.bind("<KeyRelease>", self.changer_titre_modification) # Si une modification a été faite dans le champ de texte, on change le titre de la fenêtre pour indiquer qu'elle n'a pas été enregistrée
+        self.champ_texte.bind("<KeyRelease>", self.mettre_a_jour_titre) # Si une modification a été faite dans le champ de texte, on change le titre de la fenêtre pour indiquer qu'elle n'a pas été enregistrée
 
-    def ouvrir_fichier(self, dialogue=True, nom_fichier=""):
+        self.bind("<Control-o>", lambda event:self.ouvrir_fichier(event, dialogue=True))
+
+        self.bind("<Control-s>", lambda event:self.enregistrer(event))
+
+
+        self.raccourcis_claviers = ["<Control-o>", "<Control-s>"] # Liste des raccourcis clavier de l'éditeur
+
+
+    def ouvrir_fichier(self,event, dialogue=True, nom_fichier=""):
         "Ouvrir un fichier JSON représentant une lecture"
         if dialogue == True: # Si on doit afficher une boîte de dialogue pour demander à l'utilisateur de choisir un fichier à ouvrir
             nom_fichier = filedialog.askopenfilename(title="Sélectionnez un fichier JSON représentant une lecture :", filetypes=[("Base de données JSON", "*.json")]) # On demande à l'utilisateur de sélectionner le fichier à ouvrir
@@ -61,7 +69,7 @@ class Editeur(Tk):
                     print(donnees)
                     f.close() # On ferme le fichier JSON
 
-                    donnees_formatees = json.dumps(donnees, indent=4) # Données du fichier JSON formattées sous forme de chaîne de caractères normale
+                    donnees_formatees = json.dumps(donnees, indent=4, ensure_ascii=False) # Données du fichier JSON formattées sous forme de chaîne de caractères normale
                     donnees_affichees = "\n".join(f"{key}:{value}" for key, value in donnees.items()) # Données formatées telles qu'elles sont affichées dans le champ de texte
                     
         
@@ -102,19 +110,24 @@ class Editeur(Tk):
         self.fichier_existant = True # Le fichier existe
 
 
-    def changer_titre_modification(self, event):
+    def mettre_a_jour_titre(self, event):
         "Changer le titre de la fenêtre si une modification non enregistrée a été faite"
-        if self.comparer_versions() : # Si des modifications non enregistrées ont été faites à un fichier existant
 
-            if self.fichier_existant:
-                self.title(f"*{os.path.basename(self.fichier_ouvert)} - Editeur de lecture")
+        if self.comparer_versions():   
+                print("Il y a eu des modifications")
+                if self.fichier_existant:
+                    self.title(f"*{os.path.basename(self.fichier_ouvert)} - Editeur de lecture")
 
-            else:
-                self.title(f"Fichier non enregistré - Editeur de lecture")
-
+                else:
+                    self.title(f"Fichier non enregistré - Editeur de lecture")
 
         else:
-            self.title(f"{os.path.basename(self.fichier_ouvert)}")              
+            print("Il n'y a pas eu de modifications")
+            self.title(f"{os.path.basename(self.fichier_ouvert)}")
+
+
+
+                   
 
 
     def toJSON(self, donnees):
@@ -161,16 +174,23 @@ class Editeur(Tk):
     def comparer_versions(self):
         "Comparer la version enregistrée et la version en cours de travail d'un fichier"
         if self.fichier_existant and self.fichier_ouvert != "":
+            print("Le fichier existe et est ", self.fichier_ouvert)
             with open(self.fichier_ouvert, "r") as f: # On ouvre le fichier JSON en lecture
-                version_enregistree = f.read() # Version enregistrée du fichier 
+                version_enregistree = json.load(f) # Version enregistrée du fichier 
                 f.close()
 
     
             version_travail = self.toJSON(self.champ_texte.get(1.0, END))[1] # Version en cours de travail du fichier
 
-            return version_travail != version_enregistree
+            version_enregistree_json = json.dumps(version_enregistree, sort_keys=True)
+            version_travail_json = json.dumps(version_travail, sort_keys=True)
+            
+            print("Version enregistrée (json) :", version_enregistree_json)
+            print("Version de travail (json) :", version_travail_json)
+            return version_travail_json != version_enregistree_json
         
         else: # Si l'utilisateur travaille sur un nouveau fichier
+            print("Le fichier n'existe pas")
             version_enregistree = "" # Le contenu de la version enregistrée du fichier est vide car elle n'existe pas
             version_travail = self.toJSON(self.champ_texte.get(1.0, END))[1] # Version en cours de travail du fichier
             return version_travail != version_enregistree
@@ -193,9 +213,12 @@ class Editeur(Tk):
                 self.title(f"{os.path.basename(self.fichier_ouvert)}")
 
         except FileNotFoundError:
-            pass        
+            pass
+
+
+         
     
-    def enregistrer(self):
+    def enregistrer(self, event=None):
         "Enregistrer les modifications faites à un fichier JSON"
         if not self.fichier_existant: # Si l'utilisateur n'a pas enregistré les données dans un fichier ou que le fichier n'est pas ouvert
             self.enregistrer_sous()
@@ -203,19 +226,22 @@ class Editeur(Tk):
         else:
             if self.comparer_versions(): # Si des modifications ont été faites au fichier
                 with open(self.fichier_ouvert, "r") as f: # On ouvre le fichier JSON en lecture 
-                    global donnees_enregistrees
-                    donnees_enregistrees = json.load(f) # On charge les données enregistrées
+                    self.donnees_enregistrees = json.load(f) # On charge les données enregistrées
                     f.close() # On ferme le fichier
 
             donnees_travail = self.toJSON(self.champ_texte.get(1.0, END))[1] # Version en cours de travail du fichier
 
-            donnees_enregistrees.update(donnees_travail) # On met à jour les données enregistrées sur la version en cours de travail
+            self.donnees_enregistrees= dict(donnees_travail) # On met à jour les données enregistrées sur la version en cours de travail
 
             with open(self.fichier_ouvert, "w") as f: # On ouvre le fichier JSON en écriture
-                json.dump(donnees_enregistrees, f, indent=4)
+                json.dump(self.donnees_enregistrees, f, indent=4)
                 f.close()       
 
-            self.title(f"{os.path.basename(self.fichier_ouvert)}")
+        #self.title(f"{os.path.basename(self.fichier_ouvert)}")
+                
+        self.mettre_a_jour_titre(event=None) # Mettre à jour le titre de la fenêtre
+
+
             
 
 
