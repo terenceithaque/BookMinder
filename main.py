@@ -32,18 +32,31 @@ class Application(Tk):
         
         self.barre_menus.add_cascade(label="Editeur", menu=self.menu_editeur)
 
+        self.bouton_rafraichir = Button(self, text="Rafraîchir la liste de lecture", command=self.raifraichir_liste_lecture)
+
+        self.bouton_rafraichir.pack()
+
+
+        self.label_ajouter_lecture = Label(self, text="Vous n'avez enregistré(e) aucune lecture.") # On affiche un texte pour avertir l'utilisateur qu'il n'a enregistré aucune lecture
+
+        self.bouton_ajouter_lecture = Button(self, text="Ajouter une nouvelle lecture...", command=lambda:FenetreAjouter(self)) # On ajoute un bouton pour permettre à l'utilisateur d'ajouter une nouvelle lecture
+
+        self.lectures = Listbox(self) # Listbox contenant toutes les lectures ajoutées par l'utilisateur
+
+        self.lectures_packed = False # Variable pour savoir si la liste des lectures a été intégrée à l'interface graphique ou non
+        self.lectures_enregistrees =  Label(self, text="Vos lectures (cliquez pour ouvrir dans l'éditeur):")
         self.config(menu = self.barre_menus) # On configure le menu de la fenêtre comme étant la barre de menus qu'on a créée
 
         if os.path.exists("paths"): # Si le dossier paths existe
             if os.listdir("paths") == []: # Si le dossier paths est vide, alors on considère qu'aucune lecture n'a été enregistrée
-                Label(self, text="Vous n'avez enregistré(e) aucune lecture.").pack(fill="both") # On affiche un texte pour avertir l'utilisateur qu'il n'a enregistré aucune lecture
-                self.bouton_ajouter_lecture = Button(self, text="Ajouter une nouvelle lecture...", command=lambda:FenetreAjouter(self)) # On ajoute un bouton pour permettre à l'utilisateur d'ajouter une nouvelle lecture
+                self.label_ajouter_lecture.pack(fill="both")
                 self.bouton_ajouter_lecture.pack()
 
 
             else:
-                Label(self, text="Vos lectures (cliquez pour ouvrir dans l'éditeur):").pack(fill="both")
-                self.lectures = Listbox(self) # Listbox contenant toutes les lectures ajoutées par l'utilisateur
+                
+                self.lectures_enregistrees.pack(fill="both")
+                self.lectures.pack(fill="both")
                 for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
                     if fichier.startswith("chemin_"): # Si le nom du fichier commence par "chemin_"
                        f = open(f"paths/{fichier}", "r") # On veut lire le contenu du fichier
@@ -61,8 +74,31 @@ class Application(Tk):
                        f.close() # On ferme le fichier texte
 
                 self.lectures.pack(fill="both", expand=True)
+                self.lectures_packed = True
 
                 self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
+
+
+    def raifraichir_liste_lecture(self):
+        "Rafraîchir l'état de la liste des lectures"
+        if not self.lectures_packed: # Si la liste des lectures n'a pas été intégrée à l'interface graphique
+            self.lectures.pack(fill="both", expand=True)
+            self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
+            self.lectures_packed = True
+
+        self.label_ajouter_lecture.destroy()
+        self.lectures.delete(0, END) # On supprime tous les items de la liste des lectures
+
+        for fichier in os.listdir("paths"): # Remplir la liste des lectures avec les dernières lectures entrées par l'utilisateur
+            if fichier.startswith("chemin_"): # Si le fichier contient un chemin menant vers une lecture
+                with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier en lecture pour trouver le chemin menant vers une lecture
+                    titre_livre = os.path.basename(f.read())
+                    titre_livre = titre_livre.replace(".txt", "")
+                    self.lectures.insert(END, titre_livre)
+                    
+                               
+
+
 
     def ouvrir_lecture(self, from_list, event):
         "Ouvrir une lecture depuis la liste graphique des lectures"
@@ -83,6 +119,7 @@ class Application(Tk):
 
         else: # Si l'utilisateur veut ouvrir une lecture depuis un autre endroit que la liste
             Editeur().ouvrir_fichier(event=None, dialogue=True) # Créer un nouvel éditeur et ouvrir le fichier dans celui-ci
+
 
 
 

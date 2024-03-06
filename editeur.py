@@ -21,7 +21,7 @@ class Editeur(Tk):
 
         self.fichier_existant = False # Variable pour savoir si le fichier ouvert existe ou non
 
-        self.menu_fichier.add_command(label="Ouvrir une lecture...", command=lambda:self.ouvrir_fichier(event=None, dialogue=True)) # Commande pour ouvrir un fichier JSON représentant une lecture
+        self.menu_fichier.add_command(label="Ouvrir une lecture... Ctrl+O", command=lambda:self.ouvrir_fichier(event=None, dialogue=True)) # Commande pour ouvrir un fichier JSON représentant une lecture
 
         
         
