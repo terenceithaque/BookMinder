@@ -30,7 +30,7 @@ class Application(Tk):
 
 
         self.menu_editeur = Menu(self, tearoff=0) # Menu "Editeur"
-        self.menu_editeur.add_command(label="Ouvrir l'éditeur de lecture", command=lambda:Editeur())  # Commande pour lancer une nouvelle instance de l'éditeur de lectures
+        self.menu_editeur.add_command(label="Ouvrir l'éditeur de lecture  F1", command=lambda:Editeur())  # Commande pour lancer une nouvelle instance de l'éditeur de lectures
         
         self.barre_menus.add_cascade(label="Editeur", menu=self.menu_editeur)
 
@@ -49,10 +49,11 @@ class Application(Tk):
         self.lectures_enregistrees =  Label(self, text="Vos lectures (cliquez pour ouvrir dans l'éditeur):")
         self.config(menu = self.barre_menus) # On configure le menu de la fenêtre comme étant la barre de menus qu'on a créée
 
-        self.bind("<Control-n>", lambda event:FenetreAjouter(self, self.raifraichir_liste_lecture))
+        self.bind("<Control-n>", lambda event:FenetreAjouter(self, self.raifraichir_liste_lecture)) # L'utilisateur peut ajouter une nouvelle lecture avec Ctrl + N
         self.bind("<Control-o>", lambda event:self.ouvrir_lecture(from_list=False)) # L'utilisateur peut ouvrir une lecture avec Ctrl + O
         self.bind("<Control-r>", self.raifraichir_liste_lecture) # L'utilisateur peut rafraîchir la liste de lectures avec Ctrl + R
 
+        self.bind("<F1>", lambda event:Editeur()) # L'utilisateur peut ouvrir un nouvel éditeur avec F1
         self.bind("<F5>", self.raifraichir_liste_lecture) # L'utilisateur peut également rafraîchir la liste de lectures avec F5
 
 
