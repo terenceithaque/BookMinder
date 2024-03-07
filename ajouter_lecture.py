@@ -8,7 +8,7 @@ from sauvegarder_lecture import *
 
 class FenetreAjouter(Toplevel):
     "Classe représentant une fenêtre permettant d'ajouter une lecture"
-    def __init__(self, fenetre_maitre):
+    def __init__(self, fenetre_maitre, fonction_rafraichir):
         "Constructeur de FenetreAjouter"
         super().__init__() # On hérite de la classe Toplevel de tkinter
 
@@ -17,7 +17,7 @@ class FenetreAjouter(Toplevel):
 
         self.fenetre_maitre = fenetre_maitre # Fenêtre maître
 
-        self.label_titre = Label(self, text="Titre du livre :") # Label pour demander à l'utilisateur de saisir le titre du livre
+        self.label_titre = Label(self, text="Titre du livre : (Evitez les caractères spéciaux tels que '?' ou ',')") # Label pour demander à l'utilisateur de saisir le titre du livre
 
         self.label_titre.pack(fill="both")
 
@@ -69,11 +69,14 @@ class FenetreAjouter(Toplevel):
         self.champ_resume = Text(self) # Champ de résumé du livre
 
 
-        self.bouton_enregistrer_lecture = Button(self, text="Enregistrer la lecture...", command=lambda:enregistrer_lecture(self.titre_livre.get(), 
-                                                self.annee_livre.get(), self.auteur_livre.get(), str(self.langue_selectionnee.get()), self.champ_resume.get("1.0", END))) # Bouton pour enregistrer la lecture
+        self.bouton_enregistrer_lecture = Button(self, text="Enregistrer la lecture...", command=lambda:self.enregistrer(fonction_rafraichir)) # Bouton pour enregistrer la lecture
         
 
         self.bouton_enregistrer_lecture.pack()
+
+
+
+
 
 
         
@@ -90,6 +93,14 @@ class FenetreAjouter(Toplevel):
         self.title(self.titre_livre.get())
 
 
+    def enregistrer(self, fonction_rafraichir):
+        "Enregistrer une nouvelle lecture"  
+        enregistrer_lecture(self.titre_livre.get(), 
+                                                self.annee_livre.get(), self.auteur_livre.get(), str(self.langue_selectionnee.get()), self.champ_resume.get("1.0", END)) # Enregistrer la lecture  
+
+        fonction_rafraichir() # rafraichir la liste de lectures
+
+        
     def ajouter_champ_resume(self):
         "Faire apparaître un champ de texte pour permettre à l'utilisateur d'entrer un résumé de sa lecture"
         self.resume_manuel = True # On veut écrire un résumé manuellement, donc on passe la variable correspondante sur True

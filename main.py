@@ -20,7 +20,7 @@ class Application(Tk):
 
         self.menu_lecture = Menu(self.barre_menus, tearoff=0) # On ajoute un menu lecture à la barre de menus. Il sert entre autre à ajouter un livre lu.
 
-        self.menu_lecture.add_command(label="Nouvelle lecture...", command=lambda:FenetreAjouter(self)) # On ajoute une commande qui permet d'ajouter un livre dans les lectures au menu lecture
+        self.menu_lecture.add_command(label="Nouvelle lecture...", command=lambda:FenetreAjouter(self, self.raifraichir_liste_lecture)) # On ajoute une commande qui permet d'ajouter un livre dans les lectures au menu lecture
 
         self.menu_lecture.add_command(label="Ouvrir une lecture dans l'éditeur...", command=lambda:self.ouvrir_lecture(from_list=False, event=None))
         
@@ -41,7 +41,7 @@ class Application(Tk):
 
         self.label_ajouter_lecture = Label(self, text="Vous n'avez enregistré(e) aucune lecture.") # On affiche un texte pour avertir l'utilisateur qu'il n'a enregistré aucune lecture
 
-        self.bouton_ajouter_lecture = Button(self, text="Ajouter une nouvelle lecture...", command=lambda:FenetreAjouter(self)) # On ajoute un bouton pour permettre à l'utilisateur d'ajouter une nouvelle lecture
+        self.bouton_ajouter_lecture = Button(self, text="Ajouter une nouvelle lecture...", command=lambda:FenetreAjouter(self, self.raifraichir_liste_lecture)) # On ajoute un bouton pour permettre à l'utilisateur d'ajouter une nouvelle lecture
 
         self.lectures = Listbox(self) # Listbox contenant toutes les lectures ajoutées par l'utilisateur
 
