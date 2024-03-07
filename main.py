@@ -22,7 +22,7 @@ class Application(Tk):
 
         self.menu_lecture.add_command(label="Nouvelle lecture...", command=lambda:FenetreAjouter(self, self.raifraichir_liste_lecture)) # On ajoute une commande qui permet d'ajouter un livre dans les lectures au menu lecture
 
-        self.menu_lecture.add_command(label="Ouvrir une lecture dans l'éditeur...", command=lambda:self.ouvrir_lecture(from_list=False, event=None))
+        self.menu_lecture.add_command(label="Ouvrir une lecture dans l'éditeur... Ctrl + O", command=lambda:self.ouvrir_lecture(from_list=False, event=None))
         
         
 
@@ -50,6 +50,7 @@ class Application(Tk):
         self.config(menu = self.barre_menus) # On configure le menu de la fenêtre comme étant la barre de menus qu'on a créée
 
 
+        self.bind("<Control-o>", lambda event:self.ouvrir_lecture(from_list=False)) # L'utilisateur peut ouvrir une lecture avec Ctrl + O
         self.bind("<Control-r>", self.raifraichir_liste_lecture) # L'utilisateur peut rafraîchir la liste de lectures avec Ctrl + R
 
         self.bind("<F5>", self.raifraichir_liste_lecture) # L'utilisateur peut également rafraîchir la liste de lectures avec F5
@@ -127,7 +128,7 @@ class Application(Tk):
 
 
 
-    def ouvrir_lecture(self, from_list, event):
+    def ouvrir_lecture(self, from_list, event=None):
         "Ouvrir une lecture depuis la liste graphique des lectures"
         if from_list: # Si l'utilisateur ouvre une lecture depuis la liste des lectures
             selection = self.lectures.nearest(event.y) # On obtient les éléments sélectionnés par la souris dans la Listbox
