@@ -34,7 +34,7 @@ class Application(Tk):
         
         self.barre_menus.add_cascade(label="Editeur", menu=self.menu_editeur)
 
-        self.bouton_rafraichir = Button(self, text="Rafraîchir la liste de lecture", command=self.raifraichir_liste_lecture)
+        self.bouton_rafraichir = Button(self, text="Rafraîchir la liste de lecture (Ctrl + R ou F5)", command=self.raifraichir_liste_lecture)
 
         self.bouton_rafraichir.pack()
 
@@ -48,6 +48,12 @@ class Application(Tk):
         self.lectures_packed = False # Variable pour savoir si la liste des lectures a été intégrée à l'interface graphique ou non
         self.lectures_enregistrees =  Label(self, text="Vos lectures (cliquez pour ouvrir dans l'éditeur):")
         self.config(menu = self.barre_menus) # On configure le menu de la fenêtre comme étant la barre de menus qu'on a créée
+
+
+        self.bind("<Control-r>", self.raifraichir_liste_lecture) # L'utilisateur peut rafraîchir la liste de lectures avec Ctrl + R
+
+        self.bind("<F5>", self.raifraichir_liste_lecture) # L'utilisateur peut également rafraîchir la liste de lectures avec F5
+
 
         if os.path.exists("paths"): # Si le dossier paths existe
             if os.listdir("paths") == []: # Si le dossier paths est vide, alors on considère qu'aucune lecture n'a été enregistrée
@@ -89,7 +95,7 @@ class Application(Tk):
                 self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
 
 
-    def raifraichir_liste_lecture(self):
+    def raifraichir_liste_lecture(self, event=None):
         "Rafraîchir l'état de la liste des lectures"
         if not self.lectures_packed: # Si la liste des lectures n'a pas été intégrée à l'interface graphique
             self.lectures.pack(fill="both", expand=True)
