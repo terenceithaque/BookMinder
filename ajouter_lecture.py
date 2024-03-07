@@ -12,6 +12,9 @@ class FenetreAjouter(Toplevel):
         "Constructeur de FenetreAjouter"
         super().__init__() # On hérite de la classe Toplevel de tkinter
 
+        self.iconbitmap("images/app_icon.ico") # Icône de la fenêtre
+
+
         self.fenetre_maitre = fenetre_maitre # Fenêtre maître
 
         self.label_titre = Label(self, text="Titre du livre :") # Label pour demander à l'utilisateur de saisir le titre du livre

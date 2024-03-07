@@ -13,6 +13,9 @@ class Editeur(Tk):
 
         self.title("Editeur de lecture")
 
+        self.iconbitmap("images/app_icon.ico") # Icône de la fenêtre
+
+
         self.barre_menus = Menu(self, tearoff=0) # Barre de menus de l'éditeur
 
         self.menu_fichier = Menu(self, tearoff=0) # Menu "Fichier"
@@ -29,10 +32,14 @@ class Editeur(Tk):
         if os.listdir("paths") != []: # Si le dossier paths n'est pas vide
             for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
                 f = open(f"paths/{fichier}", "r") # On veut lire le chemin contenu dans le fichier
-                chemin_fichier_lecture = f.read() # Lire le fichier texte ouvert pour obtenir le chemin conduisant vers un fichier JSON représentant une lecture
-                chemin_fichier_lecture += ".json" # On ajoute l'extension du fichier JSON
-                self.menu_lectures_recentes.add_command(label=chemin_fichier_lecture, command=lambda chemin_fichier=chemin_fichier_lecture:Editeur().ouvrir_fichier(event=None,dialogue=False, nom_fichier=chemin_fichier))  # On ajoute un bouton pour ouvrir le fichier JSON correspondant dans un nouvel éditeur
-
+                contenu_fichier = f.read() # Lire le fichier texte ouvert pour obtenir le chemin conduisant vers un fichier JSON représentant une lecture
+                chemin_fichier_lecture = contenu_fichier + ".json"
+                print(chemin_fichier_lecture)
+                if os.path.exists(chemin_fichier_lecture): # Si le chemin contenu par le fichier existe
+                    print(f"{chemin_fichier_lecture} existe")
+                    self.menu_lectures_recentes.add_command(label=chemin_fichier_lecture, command=lambda chemin_fichier=chemin_fichier_lecture:Editeur().ouvrir_fichier(event=None,dialogue=False, nom_fichier=chemin_fichier))  # On ajoute un bouton pour ouvrir le fichier JSON correspondant dans un nouvel éditeur
+                else:
+                    print(f"{chemin_fichier_lecture} n'existe pas")
         self.menu_fichier.add_cascade(label="Lectures récentes", menu=self.menu_lectures_recentes) 
 
         self.menu_fichier.add_command(label="Enregistrer Ctrl + S", command=lambda:self.enregistrer(event=None))

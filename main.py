@@ -12,6 +12,8 @@ class Application(Tk):
 
         super().__init__() # On hérite de la classe Tk
 
+        self.iconbitmap("images/app_icon.ico") # Icône de la fenêtre d'application
+
         self.title("BookMinder") # Titre de la fenêtre d'application
 
         self.barre_menus = Menu(self, tearoff=0) # On ajoute une barre de menus à l'application 
@@ -58,8 +60,12 @@ class Application(Tk):
                 self.lectures_enregistrees.pack(fill="both")
                 self.lectures.pack(fill="both")
                 for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
+                    print(fichier)
                     if fichier.startswith("chemin_"): # Si le nom du fichier commence par "chemin_"
                        f = open(f"paths/{fichier}", "r") # On veut lire le contenu du fichier
+                       contenu_fichier = f.read() # Contenu du fichier
+                       chemin_fichier = contenu_fichier + ".json"
+                       print(chemin_fichier)
                        titre_livre = os.path.basename(f.read()) # On extrait le titre du livre depuis le chemin contenu dans le fichier texte
                        titre_fichier = fichier[7:] # Titre du livre comme il est contenu dans le fichier
                        titre_livre = titre_fichier
@@ -67,10 +73,14 @@ class Application(Tk):
                                
                                
 
-                                        
+                       print(chemin_fichier)                 
                            
-                           
-                       self.lectures.insert(END, titre_livre)
+                       if os.path.exists(chemin_fichier): # Si le chemin contenu dans le fichier existe
+                            print(f"{chemin_fichier} existe")  
+                            self.lectures.insert(END, titre_livre)
+
+                       else:
+                           print(f"{chemin_fichier} n'existe pas")     
                        f.close() # On ferme le fichier texte
 
                 self.lectures.pack(fill="both", expand=True)
@@ -90,11 +100,22 @@ class Application(Tk):
         self.lectures.delete(0, END) # On supprime tous les items de la liste des lectures
 
         for fichier in os.listdir("paths"): # Remplir la liste des lectures avec les dernières lectures entrées par l'utilisateur
+            print(fichier)
             if fichier.startswith("chemin_"): # Si le fichier contient un chemin menant vers une lecture
                 with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier en lecture pour trouver le chemin menant vers une lecture
-                    titre_livre = os.path.basename(f.read())
-                    titre_livre = titre_livre.replace(".txt", "")
-                    self.lectures.insert(END, titre_livre)
+                    contenu_fichier = f.read() # Contenu du fichier
+                    print(contenu_fichier)
+                    chemin_fichier = contenu_fichier + ".json"
+                    titre_livre = os.path.basename(chemin_fichier)
+                    
+                    if os.path.exists(chemin_fichier):  # Si le chemin existe
+                        print(f"{chemin_fichier} existe")  
+                        titre_livre = titre_livre.replace(".json", "")
+                        self.lectures.insert(END, titre_livre)
+
+
+                    else:
+                        print(f"{chemin_fichier} n'existe pas")      
                     
                                
 
