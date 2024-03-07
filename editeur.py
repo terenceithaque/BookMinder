@@ -28,6 +28,7 @@ class Editeur(Tk):
 
         
         
+        
         self.menu_lectures_recentes = Menu(self.menu_fichier, tearoff=0) # Menu pour ouvrir une lecture récente
         if os.listdir("paths") != []: # Si le dossier paths n'est pas vide
             for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
@@ -46,6 +47,9 @@ class Editeur(Tk):
 
         self.menu_fichier.add_command(label="Enregistrer sous...", command=self.enregistrer_sous)   
 
+
+        self.menu_fichier.add_command(label="Quitter l'éditeur Ctrl + W", command=self.quitter) # Ajouter un bouton pour quitter l'éditeur
+
         self.barre_menus.add_cascade(label="Fichier", menu=self.menu_fichier)
 
 
@@ -60,6 +64,9 @@ class Editeur(Tk):
         self.bind("<Control-o>", lambda event:self.ouvrir_fichier(event, dialogue=True))
 
         self.bind("<Control-s>", lambda event:self.enregistrer(event))
+
+
+        self.bind("<Control-w>", self.quitter)
 
 
         self.raccourcis_claviers = ["<Control-o>", "<Control-s>"] # Liste des raccourcis clavier de l'éditeur
@@ -176,6 +183,14 @@ class Editeur(Tk):
                 return True
             
         return False"""
+    
+
+    def modifications_sauvegardees(self):
+        "Vérifier si les modifications apportées à un fichier ont été sauvegardées"
+        if self.comparer_versions(): # Si des modifications ont été faites
+            return False
+        
+        return True # Si l'utilisateur n'a pas fait de modifications, on renvoie True
 
 
     def comparer_versions(self):
@@ -248,6 +263,20 @@ class Editeur(Tk):
                 
         self.mettre_a_jour_titre(event=None) # Mettre à jour le titre de la fenêtre
 
+
+    def quitter(self, event=None):
+        "Quitter l'éditeur"
+        if not self.modifications_sauvegardees(): # Si l'utilisateur n'a pas sauvegardé les modifications apportées à un fichier
+            enregistrer = messagebox.askyesnocancel("Enregistrer les modifications ?", "Les dernières modifications n'ont pas été enregistrées. Voulez-vous les enregistrer avant de quitter ?") # Demander à l'utilisateur s'il souhaite enregistrer les modifications
+            if enregistrer == True: # Si l'utilisateur veut enregistrer les modifications
+                self.enregistrer() # Enregistrer les modifications
+                self.destroy() # Détruire la fenêtre de l'éditeur
+
+            elif enregistrer == False: # Si l'utilisateur ne veut pas enregistrer les modifications
+                self.destroy() # On a juste à détruire la fenêtre de l'éditeur
+
+        else: # Si les modifications ont été sauvegardées
+            self.destroy() # Détruire la fenêtre de l'éditeur            
 
             
 
