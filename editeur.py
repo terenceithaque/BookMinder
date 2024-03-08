@@ -4,7 +4,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 import json
 import os
-import editorfuncs.copier_coller # On importe le script copier_coller du dossier editorfuncs pour pouvoir copier des éléments
+import editorfuncs.copier_coller as copier # On importe le script copier_coller du dossier editorfuncs pour pouvoir copier des éléments
 
 
 editeurs = [] # Liste des éditeurs ouverts
@@ -17,6 +17,9 @@ class Editeur(Tk):
 
 
         editeurs.append(self) # On ajoute le nouvel éditeur à la liste des éditeurs ouverts
+
+        self.champ_texte = Text(self) # Champ de texte dans lequel sont affichées les données d'un fichier JSON ouvert
+
 
         self.title("Editeur de lecture")
 
@@ -62,9 +65,14 @@ class Editeur(Tk):
         self.barre_menus.add_cascade(label="Fichier", menu=self.menu_fichier)
 
 
+        self.menu_edition = Menu(self, tearoff=0) # Menu "Edition"
+        self.menu_edition.add_command(label="Copier", command=lambda:copier.copier(self.champ_texte)) # Commande pour copier du texte sélectionné 
+
+        self.barre_menus.add_cascade(label="Edition", menu=self.menu_edition)
+
+        
         self.config(menu=self.barre_menus) # On configure la barre de menus comme menu de la fenêtre
 
-        self.champ_texte = Text(self) # Champ de texte dans lequel sont affichées les données d'un fichier JSON ouvert
 
         self.champ_texte.pack(fill="both", expand=True)
 
