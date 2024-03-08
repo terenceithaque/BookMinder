@@ -66,11 +66,11 @@ class Editeur(Tk):
 
 
         self.menu_edition = Menu(self, tearoff=0) # Menu "Edition"
-        self.menu_edition.add_command(label="Copier", command=lambda:copier.copier(self.champ_texte)) # Commande pour copier du texte sélectionné 
+        self.menu_edition.add_command(label="Copier Ctrl + C", command=lambda:copier.copier(self.champ_texte)) # Commande pour copier du texte sélectionné 
 
         self.barre_menus.add_cascade(label="Edition", menu=self.menu_edition)
 
-        
+
         self.config(menu=self.barre_menus) # On configure la barre de menus comme menu de la fenêtre
 
 
@@ -81,6 +81,8 @@ class Editeur(Tk):
         self.bind("<Control-o>", lambda event:self.ouvrir_fichier(event, dialogue=True))
 
         self.bind("<Control-s>", lambda event:self.enregistrer(event))
+
+        self.bind("<Control-c>", lambda:copier.copier(self.champ_texte)) # L'utilisateur peut utiliser Ctrl + C pour copier du texte
 
 
         self.bind("<Control-w>", self.quitter)
