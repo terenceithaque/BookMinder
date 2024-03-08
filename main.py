@@ -35,7 +35,7 @@ class Application(Tk):
 
 
         self.menu_editeur = Menu(self, tearoff=0) # Menu "Editeur"
-        self.menu_editeur.add_command(label="Ouvrir l'éditeur de lecture  F1", command=lambda:Editeur())  # Commande pour lancer une nouvelle instance de l'éditeur de lectures
+        self.menu_editeur.add_command(label="Ouvrir l'éditeur de lecture  F1", command=lambda:Editeur(self))  # Commande pour lancer une nouvelle instance de l'éditeur de lectures
         
         self.barre_menus.add_cascade(label="Editeur", menu=self.menu_editeur)
 
@@ -58,7 +58,7 @@ class Application(Tk):
         self.bind("<Control-o>", lambda event:self.ouvrir_lecture(from_list=False)) # L'utilisateur peut ouvrir une lecture avec Ctrl + O
         self.bind("<Control-r>", self.raifraichir_liste_lecture) # L'utilisateur peut rafraîchir la liste de lectures avec Ctrl + R
 
-        self.bind("<F1>", lambda event:Editeur()) # L'utilisateur peut ouvrir un nouvel éditeur avec F1
+        self.bind("<F1>", lambda event:Editeur(self)) # L'utilisateur peut ouvrir un nouvel éditeur avec F1
         self.bind("<F5>", self.raifraichir_liste_lecture) # L'utilisateur peut également rafraîchir la liste de lectures avec F5
 
 
@@ -148,11 +148,11 @@ class Application(Tk):
                     print("Le titre cliqué est dans le nom du fichier")
                     with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier texte afin d'y trouver le chemin du fichier à ouvrir
                         chemin_fichier = f.read() # Chemin du fichier JSON à ouvrir
-                        Editeur().ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_fichier) # On ouvre le fichier JSON dans une nouvelle instance de l'éditeur
+                        Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_fichier) # On ouvre le fichier JSON dans une nouvelle instance de l'éditeur
                         f.close()
 
         else: # Si l'utilisateur veut ouvrir une lecture depuis un autre endroit que la liste
-            Editeur().ouvrir_fichier(event=None, dialogue=True) # Créer un nouvel éditeur et ouvrir le fichier dans celui-ci
+            Editeur(self).ouvrir_fichier(event=None, dialogue=True) # Créer un nouvel éditeur et ouvrir le fichier dans celui-ci
 
 
 

@@ -11,7 +11,7 @@ editeurs = [] # Liste des éditeurs ouverts
 
 class Editeur(Tk):
     "Classe représentant l'éditeur de lecture"
-    def __init__(self):
+    def __init__(self, application_maitre):
         "Constructeur de l'éditeur"
         super().__init__() # On hérite des propriétés de la classe Tk
 
@@ -57,6 +57,8 @@ class Editeur(Tk):
 
         self.menu_fichier.add_command(label="Quitter l'éditeur Ctrl + W", command=self.quitter) # Ajouter un bouton pour quitter l'éditeur
 
+
+        self.menu_fichier.add_command(label="Quitter BookMinder...", command=application_maitre.quitter) # Bouton pour fermer Bookminder depuis l'éditeur
         self.barre_menus.add_cascade(label="Fichier", menu=self.menu_fichier)
 
 
@@ -79,7 +81,7 @@ class Editeur(Tk):
         self.raccourcis_claviers = ["<Control-o>", "<Control-s>"] # Liste des raccourcis clavier de l'éditeur
 
         self.protocol("WM_DELETE_WINDOW", self.quitter) # Si l'utilisateur clique sur le bouton en forme de croix pour quitter, on appelle self.quitter pour fermer proprement l'éditeur
-        
+
     def ouvrir_fichier(self,event, dialogue=True, nom_fichier=""):
         "Ouvrir un fichier JSON représentant une lecture"
         if dialogue == True: # Si on doit afficher une boîte de dialogue pour demander à l'utilisateur de choisir un fichier à ouvrir
