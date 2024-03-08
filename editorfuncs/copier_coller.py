@@ -50,5 +50,17 @@ def couper(event= None, widget_texte=None):
     widget_texte.delete(start_index, stop_index) # On supprime tout le texte compris entre l'index de début de sélection et l'index de fin de sélection
     print("Coupé ", texte_a_copier)
 
+
+
+def coller(event=None,  widget_texte = None):
+    "Coller un élément"
+    if widget_texte == None: # Si widget_texte est None
+            raise Exception(print("wigdet_texte est None")) # On lève une erreur
+    
+
+    texte_a_coller = clipboard.paste() # Coller l'élément présent dans le presse-papiers
+
+    widget_texte.insert(INSERT, texte_a_coller) # Insérer le texte à coller à la position actuelle du curseur dans le widget texte
+
     
 

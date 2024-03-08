@@ -68,7 +68,7 @@ class Editeur(Tk):
         self.menu_edition = Menu(self, tearoff=0) # Menu "Edition"
         self.menu_edition.add_command(label="Copier Ctrl + C", command=lambda:copier.copier(self.champ_texte)) # Commande pour copier du texte sélectionné 
         self.menu_edition.add_command(label="Couper Ctrl + X", command=lambda:copier.couper(widget_texte=self.champ_texte)) # Commande pour couper du texte sélectionné
-
+        self.menu_edition.add_command(label="Coller", command=lambda:copier.coller(widget_texte=self.champ_texte)) # Commande pour coller un élément du presse-papiers
         self.barre_menus.add_cascade(label="Edition", menu=self.menu_edition)
 
 
