@@ -5,11 +5,17 @@ from tkinter import messagebox
 import json
 import os
 
+
+editeurs = [] # Liste des éditeurs ouverts
+
 class Editeur(Tk):
     "Classe représentant l'éditeur de lecture"
     def __init__(self):
         "Constructeur de l'éditeur"
         super().__init__() # On hérite des propriétés de la classe Tk
+
+
+        editeurs.append(self) # On ajoute le nouvel éditeur à la liste des éditeurs ouverts
 
         self.title("Editeur de lecture")
 
@@ -271,12 +277,16 @@ class Editeur(Tk):
             if enregistrer == True: # Si l'utilisateur veut enregistrer les modifications
                 self.enregistrer() # Enregistrer les modifications
                 self.destroy() # Détruire la fenêtre de l'éditeur
+                editeurs.remove(self) # On retire l'éditeur actuel des éditeurs ouverts
 
             elif enregistrer == False: # Si l'utilisateur ne veut pas enregistrer les modifications
                 self.destroy() # On a juste à détruire la fenêtre de l'éditeur
+                editeurs.remove(self)
 
         else: # Si les modifications ont été sauvegardées
-            self.destroy() # Détruire la fenêtre de l'éditeur            
+            self.destroy() # Détruire la fenêtre de l'éditeur 
+            editeurs.remove(self)           
+
 
             
 

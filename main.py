@@ -1,5 +1,6 @@
 # Script principal
 from tkinter import * # Importation de tkinter pour l'interface graphique
+from tkinter import messagebox
 from ajouter_lecture import *
 import os
 from editeur import * 
@@ -24,6 +25,7 @@ class Application(Tk):
 
         self.menu_lecture.add_command(label="Ouvrir une lecture dans l'éditeur... Ctrl + O", command=lambda:self.ouvrir_lecture(from_list=False, event=None))
         
+        self.menu_lecture.add_command(label="Quitter l'application...", command=self.quitter)
         
 
         self.barre_menus.add_cascade(label="Lecture", menu=self.menu_lecture) # On insère le menu lecture dans la barre de menus
@@ -162,7 +164,50 @@ class Application(Tk):
 
     def titre(self, titre):
         "Changer le titre de la fenêtre"
-        self.title(titre)            
+        self.title(titre)
+
+
+    def quitter(self):
+        "Quitter l'application"
+        annuler = False # Variable pour savoir si l'utilisateur a cliqué sur Annuler
+        n_editeurs_ouverts = len(editeurs)  # Total des éditeurs ouverts
+        editeurs_non_sauv = [] # Liste des éditeurs dont les modifications n'ont pas été sauvegardées
+        n_editeurs_non_sauv = len(editeurs_non_sauv) # Total des éditeurs aux modifications non sauvegardées
+        for editeur in editeurs: # Pour chaque éditeur ouverts 
+            if not editeur.modifications_sauvegardees(): # Si les modifications apportées dans l'éditeur n'ont pas été enregistrées
+                editeurs_non_sauv.append(editeur) # On ajoute l'éditeur à la liste des éditeurs non enregistrés
+                n_editeurs_non_sauv = len(editeurs_non_sauv) # On met à jour le nombre d'éditeurs non sauvegardés
+
+        if n_editeurs_non_sauv > 0: # S'il y a des éditeurs non sauvegardés
+            enregistrer = messagebox.askyesnocancel("Sauvegarder les modifications ?", f"Il y a {n_editeurs_non_sauv} éditeurs dans lesquel des modifications n'ont pas été enregistrées. Souhaitez-vous enregistrer ces modifications avant de quitter ?") # Demander à l'utilisateur s'il souhaite enregistrer les modifications apportées dans chaque éditeur
+            if enregistrer == None: # Si l'utilisateur a cliqué sur Annnuler
+                annuler = True
+                return 
+            
+            if enregistrer == True: # Si l'utilisateur veut enregistrer les modifications
+                for editeur in editeurs: # Pour chaque éditeur ouvert
+                    if editeur in editeurs_non_sauv: # Si l'éditeur contient des modifications non enregistrées
+                        editeur.enregistrer() # Enregistrer les modifications
+                        editeurs_non_sauv.remove(editeur)
+
+                    editeur.destroy()    
+
+            if enregistrer == False: # Si l'utilisateur ne veut pas enregistrer les modifications
+                for editeur in editeurs: # Pour chaque éditeur ouvert
+                    if editeur in editeurs_non_sauv: # Si l'éditeur contient des modifications non sauvegardées
+                        editeurs_non_sauv.remove(editeur)
+
+                    editeur.destroy() # On détruit la fenêtre de l'éditeur
+                    editeurs.remove(editeur)
+
+        self.destroy() # Enfin, on détruit la fenêtre d'application principale            
+
+
+
+
+             
+
+
 
 app = Application() # On crée une nouvelle instance d'application
 
