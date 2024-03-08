@@ -28,7 +28,7 @@ class Application(Tk):
 
         self.menu_lecture.add_command(label="Ouvrir une lecture dans l'éditeur... Ctrl + O", command=lambda:self.ouvrir_lecture(from_list=False, event=None))
         
-        self.menu_lecture.add_command(label="Quitter l'application...", command=self.quitter)
+        self.menu_lecture.add_command(label="Quitter l'application... Ctrl + Q", command=self.quitter)
         
 
         self.barre_menus.add_cascade(label="Lecture", menu=self.menu_lecture) # On insère le menu lecture dans la barre de menus
@@ -57,6 +57,8 @@ class Application(Tk):
         self.bind("<Control-n>", lambda event:FenetreAjouter(self, self.raifraichir_liste_lecture)) # L'utilisateur peut ajouter une nouvelle lecture avec Ctrl + N
         self.bind("<Control-o>", lambda event:self.ouvrir_lecture(from_list=False)) # L'utilisateur peut ouvrir une lecture avec Ctrl + O
         self.bind("<Control-r>", self.raifraichir_liste_lecture) # L'utilisateur peut rafraîchir la liste de lectures avec Ctrl + R
+
+        self.bind("<Control-q>", self.quitter)
 
         self.bind("<F1>", lambda event:Editeur(self)) # L'utilisateur peut ouvrir un nouvel éditeur avec F1
         self.bind("<F5>", self.raifraichir_liste_lecture) # L'utilisateur peut également rafraîchir la liste de lectures avec F5
@@ -170,7 +172,7 @@ class Application(Tk):
         self.title(titre)
 
 
-    def quitter(self):
+    def quitter(self, event=None):
         "Quitter l'application"
         annuler = False # Variable pour savoir si l'utilisateur a cliqué sur Annuler
         n_editeurs_ouverts = len(editeurs)  # Total des éditeurs ouverts

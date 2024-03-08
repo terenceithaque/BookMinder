@@ -58,7 +58,7 @@ class Editeur(Tk):
         self.menu_fichier.add_command(label="Quitter l'éditeur Ctrl + W", command=self.quitter) # Ajouter un bouton pour quitter l'éditeur
 
 
-        self.menu_fichier.add_command(label="Quitter BookMinder...", command=application_maitre.quitter) # Bouton pour fermer Bookminder depuis l'éditeur
+        self.menu_fichier.add_command(label="Quitter BookMinder... Ctrl + Q", command=application_maitre.quitter) # Bouton pour fermer Bookminder depuis l'éditeur
         self.barre_menus.add_cascade(label="Fichier", menu=self.menu_fichier)
 
 
@@ -76,6 +76,8 @@ class Editeur(Tk):
 
 
         self.bind("<Control-w>", self.quitter)
+
+        self.bind("<Control-q>", application_maitre.quitter)
 
 
         self.raccourcis_claviers = ["<Control-o>", "<Control-s>"] # Liste des raccourcis clavier de l'éditeur
@@ -252,7 +254,7 @@ class Editeur(Tk):
     
     def enregistrer(self, event=None):
         "Enregistrer les modifications faites à un fichier JSON"
-        if not self.fichier_existant: # Si l'utilisateur n'a pas enregistré les données dans un fichier ou que le fichier n'est pas ouvert
+        if not self.fichier_existant or self.fichier_ouvert == "": # Si l'utilisateur n'a pas enregistré les données dans un fichier ou que le fichier n'est pas ouvert
             self.enregistrer_sous()
 
         else:
