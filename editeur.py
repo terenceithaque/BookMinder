@@ -4,6 +4,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 import json
 import os
+import editorfuncs.copier_coller # On importe le script copier_coller du dossier editorfuncs pour pouvoir copier des éléments
 
 
 editeurs = [] # Liste des éditeurs ouverts
@@ -77,7 +78,8 @@ class Editeur(Tk):
 
         self.raccourcis_claviers = ["<Control-o>", "<Control-s>"] # Liste des raccourcis clavier de l'éditeur
 
-
+        self.protocol("WM_DELETE_WINDOW", self.quitter) # Si l'utilisateur clique sur le bouton en forme de croix pour quitter, on appelle self.quitter pour fermer proprement l'éditeur
+        
     def ouvrir_fichier(self,event, dialogue=True, nom_fichier=""):
         "Ouvrir un fichier JSON représentant une lecture"
         if dialogue == True: # Si on doit afficher une boîte de dialogue pour demander à l'utilisateur de choisir un fichier à ouvrir

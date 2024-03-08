@@ -13,6 +13,9 @@ class Application(Tk):
 
         super().__init__() # On hérite de la classe Tk
 
+        self.protocol("WM_DELETE_WINDOW", self.quitter) # Si l'utilisateur clique sur le bouton en forme de croix pour quitter, on appelle self.quitter pour fermer proprement l'application
+
+
         self.iconbitmap("images/app_icon.ico") # Icône de la fenêtre d'application
 
         self.title("BookMinder") # Titre de la fenêtre d'application
@@ -174,9 +177,10 @@ class Application(Tk):
         editeurs_non_sauv = [] # Liste des éditeurs dont les modifications n'ont pas été sauvegardées
         n_editeurs_non_sauv = len(editeurs_non_sauv) # Total des éditeurs aux modifications non sauvegardées
         for editeur in editeurs: # Pour chaque éditeur ouverts 
-            if not editeur.modifications_sauvegardees(): # Si les modifications apportées dans l'éditeur n'ont pas été enregistrées
-                editeurs_non_sauv.append(editeur) # On ajoute l'éditeur à la liste des éditeurs non enregistrés
-                n_editeurs_non_sauv = len(editeurs_non_sauv) # On met à jour le nombre d'éditeurs non sauvegardés
+            if editeur.winfo_exists():
+                if not editeur.modifications_sauvegardees(): # Si les modifications apportées dans l'éditeur n'ont pas été enregistrées
+                    editeurs_non_sauv.append(editeur) # On ajoute l'éditeur à la liste des éditeurs non enregistrés
+                    n_editeurs_non_sauv = len(editeurs_non_sauv) # On met à jour le nombre d'éditeurs non sauvegardés
 
         if n_editeurs_non_sauv > 0: # S'il y a des éditeurs non sauvegardés
             enregistrer = messagebox.askyesnocancel("Sauvegarder les modifications ?", f"Il y a {n_editeurs_non_sauv} éditeurs dans lesquel des modifications n'ont pas été enregistrées. Souhaitez-vous enregistrer ces modifications avant de quitter ?") # Demander à l'utilisateur s'il souhaite enregistrer les modifications apportées dans chaque éditeur
@@ -186,11 +190,11 @@ class Application(Tk):
             
             if enregistrer == True: # Si l'utilisateur veut enregistrer les modifications
                 for editeur in editeurs: # Pour chaque éditeur ouvert
-                    if editeur in editeurs_non_sauv: # Si l'éditeur contient des modifications non enregistrées
-                        editeur.enregistrer() # Enregistrer les modifications
-                        editeurs_non_sauv.remove(editeur)
+                    if editeur.winfo_exists():
+                            editeur.enregistrer() # Enregistrer les modifications
+                            editeurs_non_sauv.remove(editeur)
 
-                    editeur.destroy()    
+                       
 
             if enregistrer == False: # Si l'utilisateur ne veut pas enregistrer les modifications
                 for editeur in editeurs: # Pour chaque éditeur ouvert
@@ -200,6 +204,9 @@ class Application(Tk):
                     editeur.destroy() # On détruit la fenêtre de l'éditeur
                     editeurs.remove(editeur)
 
+        for editeur in editeurs:
+            if editeur.winfo_exists():
+                editeur.destroy()
         self.destroy() # Enfin, on détruit la fenêtre d'application principale            
 
 
