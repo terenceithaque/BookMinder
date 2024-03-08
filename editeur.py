@@ -67,8 +67,8 @@ class Editeur(Tk):
 
         self.menu_edition = Menu(self, tearoff=0) # Menu "Edition"
         self.menu_edition.add_command(label="Copier Ctrl + C", command=lambda:copier.copier(self.champ_texte)) # Commande pour copier du texte sélectionné 
-        self.menu_edition.add_command(label="Couper", command=lambda:copier.couper(self.champ_texte)) # Commande pour couper du texte sélectionné
-        
+        self.menu_edition.add_command(label="Couper Ctrl + X", command=lambda:copier.couper(widget_texte=self.champ_texte)) # Commande pour couper du texte sélectionné
+
         self.barre_menus.add_cascade(label="Edition", menu=self.menu_edition)
 
 
@@ -83,8 +83,9 @@ class Editeur(Tk):
 
         self.bind("<Control-s>", lambda event:self.enregistrer(event))
 
-        self.bind("<Control-c>", lambda:copier.copier(self.champ_texte)) # L'utilisateur peut utiliser Ctrl + C pour copier du texte
+        self.bind("<Control-c>", lambda:copier.copier(widget_texte=self.champ_texte)) # L'utilisateur peut utiliser Ctrl + C pour copier du texte
 
+        self.bind("<Control-x>", lambda:copier.couper(widget_texte=self.champ_texte)) # L'utilisateur peut utiliser Ctrl + X pour couper du texte
 
         self.bind("<Control-w>", self.quitter)
 

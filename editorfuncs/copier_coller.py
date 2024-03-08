@@ -26,7 +26,7 @@ def copier(event= None, widget_texte=None):
     print("Copié ", texte_a_copier)
 
 
-def couper(widget_texte):
+def couper(event= None, widget_texte=None):
     "Couper un élément"
     try:
         if widget_texte == None: # Si widget_texte est None
