@@ -8,7 +8,7 @@ def copier(event= None, widget_texte=None):
         if widget_texte == None: # Si widget_texte est None
             raise Exception(print("wigdet_texte est None")) # On lève une erreur
         
-        
+
         start_index = widget_texte.index(SEL_FIRST)  # Obtenir la position de début de l'élément à copier dans le widget texte
         stop_index = widget_texte.index(SEL_LAST) # Obtenir la position de fin de l'élément à copier
         texte_a_copier = widget_texte.get(start_index, stop_index)
@@ -26,7 +26,29 @@ def copier(event= None, widget_texte=None):
     print("Copié ", texte_a_copier)
 
 
-def couper(element, widget_texte):
+def couper(widget_texte):
     "Couper un élément"
-    clipboard.copy(element) # Copier l'élément en mémoire
+    try:
+        if widget_texte == None: # Si widget_texte est None
+            raise Exception(print("wigdet_texte est None")) # On lève une erreur
+        
+
+        start_index = widget_texte.index(SEL_FIRST)  # Obtenir la position de début de l'élément à copier dans le widget texte
+        stop_index = widget_texte.index(SEL_LAST) # Obtenir la position de fin de l'élément à copier
+        texte_a_copier = widget_texte.get(start_index, stop_index)
+
+        if texte_a_copier == "": # Si le texte à copier est vide*
+            pass
+    
+    except TclError:
+        return 
+    
+    
+    
+
+    clipboard.copy(texte_a_copier) # Copier l'élément donné en paramètre
+    widget_texte.delete(start_index, stop_index) # On supprime tout le texte compris entre l'index de début de sélection et l'index de fin de sélection
+    print("Coupé ", texte_a_copier)
+
+    
 
