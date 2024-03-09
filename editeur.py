@@ -5,7 +5,7 @@ from tkinter import messagebox
 import json
 import os
 import editorfuncs.copier_coller as copier # On importe le script copier_coller du dossier editorfuncs pour pouvoir copier des éléments
-
+import editorfuncs.rechercher_remplacer as rechercher # On importe le script rechercher_remplacer pour rechercher et remplacer du texte
 
 editeurs = [] # Liste des éditeurs ouverts
 
@@ -66,6 +66,7 @@ class Editeur(Tk):
 
 
         self.menu_edition = Menu(self, tearoff=0) # Menu "Edition"
+        self.menu_edition.add_command(label="Remplacer", command=lambda:rechercher.afficher_dialogue_remplacer(self)) # Commande pour afficher la boîte de dialoge pour remplacer un texte 
         self.menu_edition.add_command(label="Copier Ctrl + C", command=lambda:copier.copier(self.champ_texte)) # Commande pour copier du texte sélectionné 
         self.menu_edition.add_command(label="Couper Ctrl + X", command=lambda:copier.couper(widget_texte=self.champ_texte)) # Commande pour couper du texte sélectionné
         self.menu_edition.add_command(label="Coller", command=lambda:copier.coller(widget_texte=self.champ_texte)) # Commande pour coller un élément du presse-papiers
