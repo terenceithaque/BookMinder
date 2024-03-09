@@ -87,6 +87,7 @@ class Editeur(Tk):
 
         self.bind("<Control-x>", lambda:copier.couper(widget_texte=self.champ_texte)) # L'utilisateur peut utiliser Ctrl + X pour couper du texte
 
+        self.bind("<Control-v>", lambda: copier.coller(widget_texte=self.champ_texte)) # L'utilisateur peut utiliser Ctrl + V pour coller du texte dans le champ de texte
         self.bind("<Control-w>", self.quitter)
 
         self.bind("<Control-q>", application_maitre.quitter)

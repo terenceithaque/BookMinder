@@ -59,6 +59,7 @@ def coller(event=None,  widget_texte = None):
     
 
     texte_a_coller = clipboard.paste() # Coller l'élément présent dans le presse-papiers
+    print("Collé ",texte_a_coller)
 
     widget_texte.insert(INSERT, texte_a_coller) # Insérer le texte à coller à la position actuelle du curseur dans le widget texte
 
