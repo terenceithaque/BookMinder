@@ -48,7 +48,7 @@ class Editeur(Tk):
                 print(chemin_fichier_lecture)
                 if os.path.exists(chemin_fichier_lecture): # Si le chemin contenu par le fichier existe
                     print(f"{chemin_fichier_lecture} existe")
-                    self.menu_lectures_recentes.add_command(label=chemin_fichier_lecture, command=lambda chemin_fichier=chemin_fichier_lecture:Editeur().ouvrir_fichier(event=None,dialogue=False, nom_fichier=chemin_fichier))  # On ajoute un bouton pour ouvrir le fichier JSON correspondant dans un nouvel éditeur
+                    self.menu_lectures_recentes.add_command(label=chemin_fichier_lecture, command=lambda chemin_fichier=chemin_fichier_lecture:Editeur(application_maitre).ouvrir_fichier(event=None,dialogue=False, nom_fichier=chemin_fichier))  # On ajoute un bouton pour ouvrir le fichier JSON correspondant dans un nouvel éditeur
                 else:
                     print(f"{chemin_fichier_lecture} n'existe pas")
         self.menu_fichier.add_cascade(label="Lectures récentes", menu=self.menu_lectures_recentes) 
