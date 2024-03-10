@@ -16,6 +16,8 @@ class Application(Tk):
         self.protocol("WM_DELETE_WINDOW", self.quitter) # Si l'utilisateur clique sur le bouton en forme de croix pour quitter, on appelle self.quitter pour fermer proprement l'application
 
 
+        self.titres = [] # Liste des titres enregistrés
+
         self.iconbitmap("images/app_icon.ico") # Icône de la fenêtre d'application
 
         self.title("BookMinder") # Titre de la fenêtre d'application
@@ -39,9 +41,20 @@ class Application(Tk):
         
         self.barre_menus.add_cascade(label="Editeur", menu=self.menu_editeur)
 
+        self.label_rechercher = Label(self, text="Rechercher une lecture :") # Label indiquant à l'utilisateur qu'il peut rechercher une lecture
+        self.label_rechercher.pack(fill="both")
+
+        self.recherche = Entry(self) # Entrée pour saisir une lecture à rechercher
+
+        self.recherche.pack(fill="both")
+
+        self.recherche.bind("<KeyRelease>", self.rechercher_lecture) # On appelle la fonction de recherche à chaque fois que l'utilisateur saisit quelque chose dans la barre de recherche
+
         self.bouton_rafraichir = Button(self, text="Rafraîchir la liste de lecture (Ctrl + R ou F5)", command=self.raifraichir_liste_lecture)
 
         self.bouton_rafraichir.pack()
+
+        
 
 
         self.label_ajouter_lecture = Label(self, text="Vous n'avez enregistré(e) aucune lecture.") # On affiche un texte pour avertir l'utilisateur qu'il n'a enregistré aucune lecture
@@ -85,6 +98,7 @@ class Application(Tk):
                        titre_fichier = fichier[7:] # Titre du livre comme il est contenu dans le fichier
                        titre_livre = titre_fichier
                        titre_livre = titre_livre.replace(".txt", "")
+                       self.titres.append(titre_livre)
                                
                                
 
@@ -102,6 +116,9 @@ class Application(Tk):
                 self.lectures_packed = True
 
                 self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
+
+
+                
 
     
     def raifraichir_liste_lecture(self, event=None):
@@ -126,7 +143,10 @@ class Application(Tk):
                     if os.path.exists(chemin_fichier):  # Si le chemin existe
                         print(f"{chemin_fichier} existe")  
                         titre_livre = titre_livre.replace(".json", "")
-                        self.lectures.insert(END, titre_livre)
+                        self.titres.append(titre_livre)
+
+                        if not titre_livre in self.lectures.get(0, END): # Si le titre n'est pas déjà présent dans la liste des lectures
+                            self.lectures.insert(END, titre_livre)
 
 
                     else:
@@ -134,7 +154,26 @@ class Application(Tk):
                     
                                
 
+    def rechercher_lecture(self, event=None):
+        "Rechercher une lecture"
+        requete = self.recherche.get() # On obtient la requête de l'utilisateur
+        titres = [titre for titre in self.lectures.get(0, END)] # Liste des titres qui sont dans la liste des lectures
+        print(titres)
+        for titre in titres: # Pour chaque titre de livre
 
+
+            if requete == titre.upper() or requete == titre.lower() or requete == titre: # Si la requête correspond au titre d'un livre
+                self.lectures.delete(0, END) # On supprime toutes les entrées de la liste des lectures
+                self.lectures.insert(END, titre) # On insère le résultat dans la liste des lectures
+                self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event)) 
+
+
+            if requete == "": # Si la requête est vide 
+                self.lectures.delete(0, END) # On supprime toutes les entrées de la liste des lectures
+                for titre in self.titres: # Pour tous les titres enregistrés 
+                    self.lectures.insert(END, titre)
+
+                self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))                
 
     def ouvrir_lecture(self, from_list, event=None):
         "Ouvrir une lecture depuis la liste graphique des lectures"
