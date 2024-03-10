@@ -103,7 +103,7 @@ class Application(Tk):
 
                 self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
 
-
+    
     def raifraichir_liste_lecture(self, event=None):
         "Rafraîchir l'état de la liste des lectures"
         if not self.lectures_packed: # Si la liste des lectures n'a pas été intégrée à l'interface graphique

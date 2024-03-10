@@ -1,6 +1,9 @@
 # Script pour rechercher et remplacer du texte
 from tkinter import *
 from tkinter import messagebox
+from tkinter import simpledialog
+import re
+
 
 
 

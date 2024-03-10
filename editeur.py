@@ -5,7 +5,7 @@ from tkinter import messagebox
 import json
 import os
 import editorfuncs.copier_coller as copier # On importe le script copier_coller du dossier editorfuncs pour pouvoir copier des éléments
-import editorfuncs.rechercher_remplacer as rechercher # On importe le script rechercher_remplacer pour rechercher et remplacer du texte
+import editorfuncs.remplacer as remplacer # On importe le script remplacer pour remplacer du texte
 
 editeurs = [] # Liste des éditeurs ouverts
 
@@ -19,7 +19,7 @@ class Editeur(Tk):
         editeurs.append(self) # On ajoute le nouvel éditeur à la liste des éditeurs ouverts
 
         self.champ_texte = Text(self) # Champ de texte dans lequel sont affichées les données d'un fichier JSON ouvert
-
+        self.champ_texte.pack(fill="both", expand=True)
 
         self.title("Editeur de lecture")
 
@@ -66,8 +66,8 @@ class Editeur(Tk):
 
 
         self.menu_edition = Menu(self, tearoff=0) # Menu "Edition"
-        self.menu_edition.add_command(label="Remplacer", command=lambda:rechercher.afficher_dialogue_remplacer(self)) # Commande pour afficher la boîte de dialoge pour remplacer un texte 
-        self.menu_edition.add_command(label="Copier Ctrl + C", command=lambda:copier.copier(self.champ_texte)) # Commande pour copier du texte sélectionné 
+        self.menu_edition.add_command(label="Remplacer", command=lambda:remplacer.afficher_dialogue_remplacer(self)) # Commande pour afficher la boîte de dialoge pour remplacer un texte 
+        self.menu_edition.add_command(label="Copier Ctrl + C", command=lambda:copier.copier(widget_texte=self.champ_texte)) # Commande pour copier du texte sélectionné 
         self.menu_edition.add_command(label="Couper Ctrl + X", command=lambda:copier.couper(widget_texte=self.champ_texte)) # Commande pour couper du texte sélectionné
         self.menu_edition.add_command(label="Coller", command=lambda:copier.coller(widget_texte=self.champ_texte)) # Commande pour coller un élément du presse-papiers
         self.barre_menus.add_cascade(label="Edition", menu=self.menu_edition)
@@ -76,7 +76,7 @@ class Editeur(Tk):
         self.config(menu=self.barre_menus) # On configure la barre de menus comme menu de la fenêtre
 
 
-        self.champ_texte.pack(fill="both", expand=True)
+        
 
         self.champ_texte.bind("<KeyRelease>", self.mettre_a_jour_titre) # Si une modification a été faite dans le champ de texte, on change le titre de la fenêtre pour indiquer qu'elle n'a pas été enregistrée
 
@@ -98,6 +98,9 @@ class Editeur(Tk):
 
         self.protocol("WM_DELETE_WINDOW", self.quitter) # Si l'utilisateur clique sur le bouton en forme de croix pour quitter, on appelle self.quitter pour fermer proprement l'éditeur
 
+        self.champ_texte.tag_add("test", 1.0)
+
+        #self.champ_texte.tag_config("test", background="black")
     def ouvrir_fichier(self,event, dialogue=True, nom_fichier=""):
         "Ouvrir un fichier JSON représentant une lecture"
         if dialogue == True: # Si on doit afficher une boîte de dialogue pour demander à l'utilisateur de choisir un fichier à ouvrir
