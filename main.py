@@ -98,7 +98,6 @@ class Application(Tk):
                        titre_fichier = fichier[7:] # Titre du livre comme il est contenu dans le fichier
                        titre_livre = titre_fichier
                        titre_livre = titre_livre.replace(".txt", "")
-                       self.titres.append(titre_livre)
                                
                                
 
@@ -107,6 +106,7 @@ class Application(Tk):
                        if os.path.exists(chemin_fichier): # Si le chemin contenu dans le fichier existe
                             print(f"{chemin_fichier} existe")  
                             self.lectures.insert(END, titre_livre)
+                            self.titres = [titre for titre in self.lectures.get(0, END)] # On met à jour les titres
 
                        else:
                            print(f"{chemin_fichier} n'existe pas")     
@@ -143,10 +143,9 @@ class Application(Tk):
                     if os.path.exists(chemin_fichier):  # Si le chemin existe
                         print(f"{chemin_fichier} existe")  
                         titre_livre = titre_livre.replace(".json", "")
-                        self.titres.append(titre_livre)
-
-                        if titre_livre not in self.lectures.get(0, END):
+                        if titre_livre not in self.titres:
                             self.lectures.insert(END, titre_livre)
+                        self.titres = [titre for titre in self.lectures.get(0, END)]
 
 
                     else:
@@ -161,25 +160,28 @@ class Application(Tk):
         print("5 premiers termes de la recherche :", requete_5_cars)
         print(self.titres)
 
+
        
 
         self.lectures.delete(0, END) # On supprime toutes les entrées de la liste des lectures
         for titre in self.titres: # Pour chaque titre de livre
-
+            print("titre :", titre)
+            print("titre stripé :", titre.strip())
 
             if requete == titre.upper() or requete == titre.lower() or requete == titre or titre.startswith(requete_5_cars): # Si la requête correspond au titre d'un livre
-                
-                self.lectures.insert(END, titre) # On insère le résultat dans la liste des lectures
-                self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event)) 
+                    self.lectures.insert(END, titre) # On insère le résultat dans la liste des lectures
+            self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event)) 
           
 
-            if requete == "": # Si la requête est vide 
-                self.lectures.delete(0, END) # On supprime toutes les entrées de la liste des lectures
-                for titre in self.titres: # Pour tous les titres enregistrés 
-                    if titre not in self.lectures.get(0, END):
-                        self.lectures.insert(END, titre)
+            
+                
 
-                self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))                
+        if requete == "":
+            self.lectures.delete(0, END)
+            for titre in self.titres:
+                self.lectures.insert(END, titre)
+                self.lectures.bind("<Double-1>", lambda event:self.ouvrir_lecture(from_list=True, event=event))    
+
 
     def ouvrir_lecture(self, from_list, event=None):
         "Ouvrir une lecture depuis la liste graphique des lectures"

@@ -97,11 +97,12 @@ class FenetreAjouter(Toplevel):
         "Supprimer les caractères spéciaux contenus dans le titre" 
         titre = self.titre_livre.get() # Titre du livre
         caracteres_interdits = ["<", ">", ":", '"', "/", "'\'","|", "?", "*"] # Liste des caractères interdits dans un nom de fichier
+    
         for caractere in caracteres_interdits: # Pour chaque caractère interdit
             if caractere in titre: # Si le titre contient un caractère interdit
                 titre = titre.replace(caractere, "") # On remplace le caractère par une chaîne vide
 
-        return titre        
+        return titre
 
 
     def enregistrer(self, fonction_rafraichir):
