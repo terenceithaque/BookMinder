@@ -161,6 +161,8 @@ class Application(Tk):
         print("5 premiers termes de la recherche :", requete_5_cars)
         print(self.titres)
 
+       
+
         self.lectures.delete(0, END) # On supprime toutes les entrées de la liste des lectures
         for titre in self.titres: # Pour chaque titre de livre
 
@@ -169,7 +171,7 @@ class Application(Tk):
                 
                 self.lectures.insert(END, titre) # On insère le résultat dans la liste des lectures
                 self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event)) 
-
+          
 
             if requete == "": # Si la requête est vide 
                 self.lectures.delete(0, END) # On supprime toutes les entrées de la liste des lectures

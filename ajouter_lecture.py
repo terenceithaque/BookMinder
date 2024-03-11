@@ -17,7 +17,7 @@ class FenetreAjouter(Toplevel):
 
         self.fenetre_maitre = fenetre_maitre # Fenêtre maître
 
-        self.label_titre = Label(self, text="Titre du livre : (Evitez les caractères spéciaux tels que '?' ou ',')") # Label pour demander à l'utilisateur de saisir le titre du livre
+        self.label_titre = Label(self, text="Titre du livre :") # Label pour demander à l'utilisateur de saisir le titre du livre
 
         self.label_titre.pack(fill="both")
 
@@ -93,10 +93,23 @@ class FenetreAjouter(Toplevel):
         self.title(self.titre_livre.get())
 
 
+    def supprimer_caracteres_speciaux(self):
+        "Supprimer les caractères spéciaux contenus dans le titre" 
+        titre = self.titre_livre.get() # Titre du livre
+        caracteres_interdits = ["<", ">", ":", '"', "/", "'\'","|", "?", "*"] # Liste des caractères interdits dans un nom de fichier
+        for caractere in caracteres_interdits: # Pour chaque caractère interdit
+            if caractere in titre: # Si le titre contient un caractère interdit
+                titre = titre.replace(caractere, "") # On remplace le caractère par une chaîne vide
+
+        return titre        
+
+
     def enregistrer(self, fonction_rafraichir):
-        "Enregistrer une nouvelle lecture"  
-        enregistrer_lecture(self.titre_livre.get(), 
-                                                self.annee_livre.get(), self.auteur_livre.get(), str(self.langue_selectionnee.get()), self.champ_resume.get("1.0", END)) # Enregistrer la lecture  
+        "Enregistrer une nouvelle lecture"
+        titre = self.supprimer_caracteres_speciaux() # Supprimer les caractères spéciaux contenus dans le titre du livre
+        print(f"Titre du livre sans les caractères spéciaux {titre}")  
+        enregistrer_lecture(titre, 
+                                self.annee_livre.get(), self.auteur_livre.get(), str(self.langue_selectionnee.get()), self.champ_resume.get("1.0", END)) # Enregistrer la lecture  
 
         fonction_rafraichir() # rafraichir la liste de lectures
 
