@@ -54,8 +54,9 @@ class Application(Tk):
 
         self.bouton_rafraichir.pack()
 
-        
+        self.menu_contextuel = Menu(self, tearoff=0) # Menu contextuel de la liste des lectures
 
+        self.menu_contextuel.add_command(label="Supprimer de la liste", command=None)
 
         self.label_ajouter_lecture = Label(self, text="Vous n'avez enregistré(e) aucune lecture.") # On affiche un texte pour avertir l'utilisateur qu'il n'a enregistré aucune lecture
 
@@ -117,9 +118,12 @@ class Application(Tk):
 
                 self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
 
+                self.lectures.bind("<Button-3>", self.afficher_menu_contextuel)
 
                 
-
+    def afficher_menu_contextuel(self, event):
+        "Afficher le menu contextuel de la liste des lectures"
+        self.menu_contextuel.post(event.x_root, event.y_root) # Afficher le menu contextuel suivant les coordonnées de l'évènement
     
     def raifraichir_liste_lecture(self, event=None):
         "Rafraîchir l'état de la liste des lectures"
@@ -168,7 +172,10 @@ class Application(Tk):
             print("titre :", titre)
             print("titre stripé :", titre.strip())
 
-            if requete == titre.upper() or requete == titre.lower() or requete == titre or titre.startswith(requete_5_cars): # Si la requête correspond au titre d'un livre
+            if requete == titre.upper() or requete == titre.lower() or requete == titre or titre.startswith(requete_5_cars) : # Si la requête correspond au titre d'un livre
+                    if requete == titre.upper() or requete == titre.lower() or requete == titre: # Si la requête est strictement égale au titre
+                        self.lectures.delete(0, END) # On retire tous les autres titres qui ne correspondent pas 
+
                     self.lectures.insert(END, titre) # On insère le résultat dans la liste des lectures
             self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event)) 
           
