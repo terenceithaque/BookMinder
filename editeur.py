@@ -2,6 +2,7 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter.ttk import Scrollbar as textscroll
 import json
 import os
 import editorfuncs.copier_coller as copier # On importe le script copier_coller du dossier editorfuncs pour pouvoir copier des éléments
@@ -18,7 +19,13 @@ class Editeur(Tk):
 
         editeurs.append(self) # On ajoute le nouvel éditeur à la liste des éditeurs ouverts
 
-        self.champ_texte = Text(self) # Champ de texte dans lequel sont affichées les données d'un fichier JSON ouvert
+        
+
+        self.text_scrollbar = textscroll(self) # Barre de défilement verticale pour le texte
+
+        self.champ_texte = Text(self, yscrollcommand=self.text_scrollbar.set) # Champ de texte dans lequel sont affichées les données d'un fichier JSON ouvert
+        self.text_scrollbar.config(command=self.champ_texte.yview)
+        self.text_scrollbar.pack(side=RIGHT, fill=Y)
         self.champ_texte.pack(fill="both", expand=True)
 
         self.title("Editeur de lecture")
