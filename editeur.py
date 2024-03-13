@@ -226,7 +226,7 @@ class Editeur(Tk):
         "Comparer la version enregistrée et la version en cours de travail d'un fichier"
         if self.fichier_existant and self.fichier_ouvert != "":
             print("Le fichier existe et est ", self.fichier_ouvert)
-            with open(self.fichier_ouvert, "r") as f: # On ouvre le fichier JSON en lecture
+            with open(self.fichier_ouvert, encoding="utf-8",  mode="r") as f: # On ouvre le fichier JSON en lecture
                 version_enregistree = json.load(f) # Version enregistrée du fichier 
                 f.close()
 
@@ -276,7 +276,7 @@ class Editeur(Tk):
 
         else:
             if self.comparer_versions(): # Si des modifications ont été faites au fichier
-                with open(self.fichier_ouvert, "r") as f: # On ouvre le fichier JSON en lecture 
+                with open(self.fichier_ouvert,encoding="utf-8", mode= "r") as f: # On ouvre le fichier JSON en lecture 
                     self.donnees_enregistrees = json.load(f) # On charge les données enregistrées
                     f.close() # On ferme le fichier
 

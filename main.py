@@ -118,12 +118,19 @@ class Application(Tk):
 
                 self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
 
-                self.lectures.bind("<Button-3>", self.afficher_menu_contextuel)
+                """for entree in self.lectures:
+                    entree.bind("<Button-3>", self.afficher_menu_contextuel)"""
 
                 
     def afficher_menu_contextuel(self, event):
         "Afficher le menu contextuel de la liste des lectures"
         self.menu_contextuel.post(event.x_root, event.y_root) # Afficher le menu contextuel suivant les coordonnées de l'évènement
+
+
+    def suppr_element_list(event=None):
+        "Supprimer un élément de la liste des lectures"
+        
+
     
     def raifraichir_liste_lecture(self, event=None):
         "Rafraîchir l'état de la liste des lectures"
