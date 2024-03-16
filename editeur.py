@@ -142,12 +142,12 @@ class Editeur(Tk):
 
                         donnees_formatees = json.dumps(donnees, indent=4, ensure_ascii=False)   # Données du fichier JSON formattées sous forme de chaîne de caractères normale
                         donnees_affichees = "\n".join(f"{key}:{value}" for key, value in donnees.items()) # Données formatées telles qu'elles sont affichées dans le champ de texte
-                        print("Données en JSON :", self.toJSON(donnees_affichees))
+                        #print("Données en JSON :", self.toJSON(donnees_affichees))
                         self.champ_texte.insert(END, donnees_affichees)
 
                         #donnees_formatees = donnees_formatees.decode("utf-8") # On décode les données formattées en utf-8
 
-                        print("Données formattées en utf-8 :", donnees_formatees) 
+                       # print("Données formattées en utf-8 :", donnees_formatees) 
                         #self.after(0, self.champ_texte.insert, END, donnees_formatees)
 
 
@@ -172,7 +172,7 @@ class Editeur(Tk):
                     self.title(f"Fichier non enregistré - Editeur de lecture")
 
         else:
-            print("Il n'y a pas eu de modifications")
+            #print("Il n'y a pas eu de modifications")
             self.title(f"{os.path.basename(self.fichier_ouvert)}")
 
 
@@ -183,21 +183,47 @@ class Editeur(Tk):
     def toJSON(self, donnees):
         "Convertir des données dans un format JSON"
         lignes = donnees.split("\n") # Séparer les données par des lignes
+        print("Lignes :", lignes)
+       
+
+        lignes_resume = [] # Liste des lignes de résumé
 
         dict_donnnees = {} # Dictionnaire pour les clés et valeurs de chaque donnée
 
+        resume = False # Savoir si l'on est en train de parcourir le résumé
+
         for ligne in lignes: # Pour chaque ligne
-            parties = ligne.split(":", 1) # Séparer chaque ligne en clés et valeurs
+            if ":" in ligne: # Si la ligne contient une valeur
+                parties = ligne.split(":", 1) # Séparer chaque ligne en clés et valeurs
 
-            if len(parties) == 2:
-                cle, valeur = parties
+                if len(parties) == 2:
+                    cle, valeur = parties
 
-                cle = cle.strip()
-                valeur = valeur.strip()
+                    cle = cle.strip()
+                    valeur = valeur.strip()
 
-                dict_donnnees[cle] = valeur
+                
 
+                    if cle == "resume": # Si la clé est le résumé du livre
+                        resume = True # On parcoure le résumé
+                        lignes_resume.append(valeur)
+
+                    elif resume: # Si l'on a déjà commencé à parcourir le résumé
+                            lignes_resume.append(valeur)
+                        
+
+                    else:
+                        dict_donnnees[cle] = valeur
+                        resume = False   
+
+
+            
+        dict_donnnees["resume"] = "\n".join(ligne for ligne in lignes_resume) # Joindre toutes les lignes de résumé dans une seule chaîne de caractères
+
+
+        print("Résumé dans le dictionnaire :", dict_donnnees["resume"])
         donnees_json = json.dumps(dict_donnnees, indent=4)
+        #print("Données json :", donnees_json)
         return donnees_json, dict_donnnees    
 
 
@@ -232,7 +258,7 @@ class Editeur(Tk):
     def comparer_versions(self):
         "Comparer la version enregistrée et la version en cours de travail d'un fichier"
         if self.fichier_existant and self.fichier_ouvert != "":
-            print("Le fichier existe et est ", self.fichier_ouvert)
+           # print("Le fichier existe et est ", self.fichier_ouvert)
             with open(self.fichier_ouvert, encoding="utf-8",  mode="r") as f: # On ouvre le fichier JSON en lecture
                 version_enregistree = json.load(f) # Version enregistrée du fichier 
                 f.close()
@@ -243,8 +269,8 @@ class Editeur(Tk):
             version_enregistree_json = json.dumps(version_enregistree, sort_keys=True)
             version_travail_json = json.dumps(version_travail, sort_keys=True)
             
-            print("Version enregistrée (json) :", version_enregistree_json)
-            print("Version de travail (json) :", version_travail_json)
+           # print("Version enregistrée (json) :", version_enregistree_json)
+           # print("Version de travail (json) :", version_travail_json)
             return version_travail_json != version_enregistree_json
         
         else: # Si l'utilisateur travaille sur un nouveau fichier

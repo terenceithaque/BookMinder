@@ -148,7 +148,11 @@ class Application(Tk):
                 with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier en lecture pour trouver le chemin menant vers une lecture
                     contenu_fichier = f.read() # Contenu du fichier
                     print(contenu_fichier)
-                    chemin_fichier = contenu_fichier + ".json"
+                    if not contenu_fichier.endswith(".json"):
+                        chemin_fichier = contenu_fichier + ".json"
+
+                    else:
+                        chemin_fichier = contenu_fichier    
                     titre_livre = os.path.basename(chemin_fichier)
                     
                     if os.path.exists(chemin_fichier):  # Si le chemin existe

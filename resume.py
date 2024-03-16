@@ -32,13 +32,13 @@ def extraire_resume(titre, langue):
         print(titre_en_url(titre))
         url_resume = "https://" + langue + "." + url + titre_en_url(titre)
         url_encodee = urllib.parse.quote(url_resume, safe=":/")
-        print("Url encodée :", url_encodee)
+        #print("Url encodée :", url_encodee)
     
         article = newspaper.Article(url_encodee) # On crée un nouvel objet Article à partir de l'URL
         article.download() # On télécharge le contenu HTMl de l'article
         article.parse()
 
-        print(article.text) # On affiche le résumé du livre
+        #print(article.text) # On affiche le résumé du livre
 
         return article.text
     
