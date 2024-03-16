@@ -61,7 +61,7 @@ class FenetreAjouter(Toplevel):
         self.etat_checkbutton_resume_auto = IntVar() # Variable pour stocker l'état du checkbutton créé ci-dessous
 
         self.etat_checkbutton_resume_auto.trace_add("write", self.champ_resume_auto)
-        self.checkbutton_resume_auto = Checkbutton(self, text="Faire un résumé automatiquement", variable=self.etat_checkbutton_resume_auto, command=self.champ_resume_auto) # Bouton pouvant être coché si l'utilisateur veut que le résumé soit fait automatiquement
+        self.checkbutton_resume_auto = Checkbutton(self, text="Faire un résumé automatiquement (requiert une connexion à Internet, car les données sont extraites de Wikipédia)", variable=self.etat_checkbutton_resume_auto, command=self.champ_resume_auto) # Bouton pouvant être coché si l'utilisateur veut que le résumé soit fait automatiquement
 
 
         self.checkbutton_resume_auto.pack()

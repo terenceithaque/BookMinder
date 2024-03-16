@@ -210,11 +210,13 @@ class Editeur(Tk):
 
                     elif resume: # Si l'on a déjà commencé à parcourir le résumé
                             lignes_resume.append(valeur)
+                            
                         
 
                     else:
+                        resume = False
                         dict_donnnees[cle] = valeur
-                        resume = False   
+                        #resume = False   
 
 
             
@@ -269,8 +271,8 @@ class Editeur(Tk):
             version_enregistree_json = json.dumps(version_enregistree, sort_keys=True)
             version_travail_json = json.dumps(version_travail, sort_keys=True)
             
-           # print("Version enregistrée (json) :", version_enregistree_json)
-           # print("Version de travail (json) :", version_travail_json)
+            #print("Version enregistrée (json) :", version_enregistree_json)
+            print("Version de travail (json) :", version_travail_json)
             return version_travail_json != version_enregistree_json
         
         else: # Si l'utilisateur travaille sur un nouveau fichier
