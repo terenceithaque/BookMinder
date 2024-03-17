@@ -30,7 +30,7 @@ class Editeur(Tk):
 
         self.title("Editeur de lecture")
 
-        self.iconbitmap("images/app_icon.ico") # Icône de la fenêtre
+        self.iconbitmap("app_icon.ico") # Icône de la fenêtre
 
 
         self.barre_menus = Menu(self, tearoff=0) # Barre de menus de l'éditeur
@@ -76,7 +76,7 @@ class Editeur(Tk):
         self.menu_edition.add_command(label="Remplacer", command=lambda:remplacer.afficher_dialogue_remplacer(self)) # Commande pour afficher la boîte de dialoge pour remplacer un texte 
         self.menu_edition.add_command(label="Copier Ctrl + C", command=lambda:copier.copier(widget_texte=self.champ_texte)) # Commande pour copier du texte sélectionné 
         self.menu_edition.add_command(label="Couper Ctrl + X", command=lambda:copier.couper(widget_texte=self.champ_texte)) # Commande pour couper du texte sélectionné
-        self.menu_edition.add_command(label="Coller", command=lambda:copier.coller(widget_texte=self.champ_texte)) # Commande pour coller un élément du presse-papiers
+        self.menu_edition.add_command(label="Coller Ctrl+V", command=lambda:copier.coller(widget_texte=self.champ_texte)) # Commande pour coller un élément du presse-papiers
         self.barre_menus.add_cascade(label="Edition", menu=self.menu_edition)
 
 
@@ -204,7 +204,7 @@ class Editeur(Tk):
 
                 
 
-                    if cle == "resume": # Si la clé est le résumé du livre
+                    if cle == "resume" and resume==False: # Si la clé est le résumé du livre
                         resume = True # On parcoure le résumé
                         lignes_resume.append(valeur)
 

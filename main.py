@@ -18,7 +18,7 @@ class Application(Tk):
 
         self.titres = [] # Liste des titres enregistrés
 
-        self.iconbitmap("images/app_icon.ico") # Icône de la fenêtre d'application
+        self.iconbitmap("app_icon.ico") # Icône de la fenêtre d'application
 
         self.title("BookMinder") # Titre de la fenêtre d'application
 

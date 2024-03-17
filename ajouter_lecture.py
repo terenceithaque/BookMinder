@@ -1,9 +1,11 @@
 # Script pour ajouter une lecture
 from tkinter import * # Importation de tkinter pour l'interface graphique
 from tkinter import filedialog # Importation du module filedialog de tkinter pour dialoguer avec les fichiers
+import langdetect
 from tkinter import messagebox
 from resume import * 
 from sauvegarder_lecture import *
+
 
 
 class FenetreAjouter(Toplevel):
@@ -12,7 +14,7 @@ class FenetreAjouter(Toplevel):
         "Constructeur de FenetreAjouter"
         super().__init__() # On hérite de la classe Toplevel de tkinter
 
-        self.iconbitmap("images/app_icon.ico") # Icône de la fenêtre
+        self.iconbitmap("app_icon.ico") # Icône de la fenêtre
 
 
         self.fenetre_maitre = fenetre_maitre # Fenêtre maître
@@ -23,7 +25,9 @@ class FenetreAjouter(Toplevel):
 
         self.titre_livre = Entry(self) # Entrée pour saisir le titre du livre
 
+
         self.titre_livre.pack(fill="both")
+        self.titre_livre.bind("<KeyRelease>", self.changer_langue)
 
         self.label_annee = Label(self, text="Année de publication :") # Label pour demander à l'utilisateur de saisir l'année de publication du livre (optionnel)
         self.label_annee.pack(fill="both")
@@ -41,14 +45,14 @@ class FenetreAjouter(Toplevel):
 
         self.langue_selectionnee.set("Anglais (en)")
 
-        options = ["Anglais (en)", "Français (fr)", "Espagnol (es)", "Italien (it)", "Japonais (ja)", "Arabe (ar)", "Estonien (est)"] # Liste des langues que l'utilisateur peut choisir pour le tire du livre
+        self.options_langues = ["Anglais (en)", "Français (fr)", "Espagnol (es)", "Italien (it)", "Japonais (ja)", "Arabe (ar)", "Estonien (est)"] # Liste des langues que l'utilisateur peut choisir pour le tire du livre
         
 
         self.label_langue = Label(self, text="Langue du titre du livre :")
         self.label_langue.pack(fill="both")
 
 
-        self.menu_langue = OptionMenu(self, self.langue_selectionnee, *options) # Menu d'options pour sélectionner la langue du titre
+        self.menu_langue = OptionMenu(self, self.langue_selectionnee, *self.options_langues) # Menu d'options pour sélectionner la langue du titre
         self.menu_langue.pack()
 
         self.resume_manuel = False # Variable pour savoir si l'utilisateur souhaite entrer manuellement le résumé du livre
@@ -84,10 +88,35 @@ class FenetreAjouter(Toplevel):
 
         self.n_champs_resume = 0 # Nombre champs de texte pour le résumé créés par l'utilisateur. S'il est au dessus de 1, on arrête d'en créer.
 
-        self.titre_livre.bind("<KeyRelease>", self.saisie_titre_livre) 
+        #self.titre_livre.bind("<KeyRelease>", self.saisie_titre_livre)
 
 
-    def saisie_titre_livre(self, event) :
+    def changer_langue(self, event):
+        "Changer la langue du titre pendant que l'utilisateur le saisit"
+        options_langues_detectees = {"en" : "Anglais (en)",
+                                     "fr": "Français (fr)",
+                                     "es" : "Espagnol (es)",
+                                     "it": "Italien (it)",
+                                     "ja": "Japonais (ja)",
+                                     "ar" : "Arabe (ar)",
+                                     "est" : "Estonien (est)"} # Dictionnaire comprennant les langues détectées et les options correspondantes
+        
+        titre_livre = self.titre_livre.get() # Obtenir le texte du livre
+        langue_detectee = langdetect.detect(titre_livre) # On détecte la langue du titre du livre
+        try:
+            if langue_detectee in options_langues_detectees: # Si la langue détectée est dans les options
+                option = options_langues_detectees[langue_detectee] # Option correspondante à la langue détectée
+                self.langue_selectionnee.set(option) # On change l'option actuelle du bouton
+        except:
+            pass
+
+        self.saisie_titre_livre() # Changer le titre de la fenêtre 
+
+
+
+
+
+    def saisie_titre_livre(self) :
         "Gérer le changement du titre de la fenêtre principale quand l'utilisateur saisit le titre du livre"
         self.fenetre_maitre.titre(self.titre_livre.get())
         self.title(self.titre_livre.get())

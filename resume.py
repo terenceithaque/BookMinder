@@ -44,6 +44,6 @@ def extraire_resume(titre, langue):
     
 
     except newspaper.article.ArticleException: # Si une erreur survient lors de l'obtention du résumé
-        messagebox.showerror(f"Le livre '{titre}' est introuvable", f"Aucun résultat pour '{titre}'. Il se peut que le titre fourni soit inccorect.")
+        messagebox.showerror(f"Le livre '{titre}' est introuvable", f"Aucun résultat pour '{titre}'. Voici quelques causes possibles pour cette erreur: \n -Le titre fourni est inccorect (contient des fautes,...) \n -La casse est inccorecte (vérifiez les minuscules et les majusucules) \n -Votre ordinateur n'est pas connecté à un réseau Internet \n -Il se peut tout simplement qu'il n'y ait aucune page correspondante sur Wikipédia. ")
 
 
