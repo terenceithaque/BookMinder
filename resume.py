@@ -1,3 +1,5 @@
+"Extraire un résumé d'une lecture depuis Wikipédia"
+
 # Script pour chercher le résumé d'un livre lu
 import newspaper # Importation du module newspaper
 import urllib.parse
@@ -40,7 +42,7 @@ def extraire_resume(titre, langue):
 
         #print(article.text) # On affiche le résumé du livre
 
-        return article.text
+        return " ".join(article.text.split()[:250]) # On retourne les 250 premiers mots du résumé
     
 
     except newspaper.article.ArticleException: # Si une erreur survient lors de l'obtention du résumé

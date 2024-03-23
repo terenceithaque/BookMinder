@@ -4,6 +4,18 @@ from tkinter import messagebox
 from ajouter_lecture import *
 import os
 from editeur import * 
+import sys
+
+
+def chemin_ressource(chemin):
+    "Trouver le chemin d'un fichier"
+    try:
+        base_path = sys._MEIPASS # PyInstaller crée un dossier temp et stocke les chemins dans _MEIPASS
+
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, chemin)        
 
 class Application(Tk):
     "Classe représentant une instance de l'application. Elle hérite de la classe Tk de tkinter"
@@ -18,7 +30,9 @@ class Application(Tk):
 
         self.titres = [] # Liste des titres enregistrés
 
-        self.iconbitmap("app_icon.ico") # Icône de la fenêtre d'application
+        self.chemin_icone = chemin_ressource("app_icon.ico")
+
+        self.iconbitmap(self.chemin_icone) # Icône de la fenêtre d'application
 
         self.title("BookMinder") # Titre de la fenêtre d'application
 

@@ -1,3 +1,5 @@
+"Copier, couper  ou coller du texte depuis ou vers l'éditeur de lecture"
+
 # Script pour copier un élément dans la mémoire de l'ordinateur
 import clipboard
 from tkinter import *

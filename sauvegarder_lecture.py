@@ -1,3 +1,5 @@
+"Enregistrer une lecture sur un périphérique de stockage"
+
 # Sauvegarder une lecture dans un fichier json
 from tkinter import filedialog
 import json

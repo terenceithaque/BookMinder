@@ -1,3 +1,5 @@
+"Fenêtre permettant à l'utilisateur d'ajouter une nouvelle lecture"
+
 # Script pour ajouter une lecture
 from tkinter import * # Importation de tkinter pour l'interface graphique
 from tkinter import filedialog # Importation du module filedialog de tkinter pour dialoguer avec les fichiers
@@ -5,7 +7,18 @@ import langdetect
 from tkinter import messagebox
 from resume import * 
 from sauvegarder_lecture import *
+import sys
 
+
+def chemin_ressource(chemin):
+    "Trouver le chemin d'un fichier"
+    try:
+        base_path = sys._MEIPASS # PyInstaller crée un dossier temp et stocke les chemins dans _MEIPASS
+
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, chemin)    
 
 
 class FenetreAjouter(Toplevel):
@@ -14,7 +27,9 @@ class FenetreAjouter(Toplevel):
         "Constructeur de FenetreAjouter"
         super().__init__() # On hérite de la classe Toplevel de tkinter
 
-        self.iconbitmap("app_icon.ico") # Icône de la fenêtre
+
+        self.chemin_icone = chemin_ressource("app_icon.ico")
+        self.iconbitmap(self.chemin_icone) # Icône de la fenêtre
 
 
         self.fenetre_maitre = fenetre_maitre # Fenêtre maître

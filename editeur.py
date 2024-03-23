@@ -1,4 +1,6 @@
 # Script pour l'éditeur qui permet de modifier le fichier JSON d'une lecture
+"L'éditeur de lecture est une fenêtre séparée dans laquelle l'utilisateur peut modifier ou ajouter des informations sur une lecture selon le principe de paires clé/valeur de JSON"
+import sys
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
@@ -9,6 +11,17 @@ import editorfuncs.copier_coller as copier # On importe le script copier_coller 
 import editorfuncs.remplacer as remplacer # On importe le script remplacer pour remplacer du texte
 
 editeurs = [] # Liste des éditeurs ouverts
+
+
+def chemin_ressource(chemin):
+    "Trouver le chemin d'un fichier"
+    try:
+        base_path = sys._MEIPASS # PyInstaller crée un dossier temp et stocke les chemins dans _MEIPASS
+
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, chemin)     
 
 class Editeur(Tk):
     "Classe représentant l'éditeur de lecture"
@@ -30,7 +43,9 @@ class Editeur(Tk):
 
         self.title("Editeur de lecture")
 
-        self.iconbitmap("app_icon.ico") # Icône de la fenêtre
+        self.chemin_icone = chemin_ressource("app_icon.ico")
+
+        self.iconbitmap(self.chemin_icone) # Icône de la fenêtre
 
 
         self.barre_menus = Menu(self, tearoff=0) # Barre de menus de l'éditeur
@@ -175,6 +190,15 @@ class Editeur(Tk):
             #print("Il n'y a pas eu de modifications")
             self.title(f"{os.path.basename(self.fichier_ouvert)}")
 
+        self.afficherJSON()    
+
+
+    def afficherJSON(self):
+        "Afficher le texte du champ converti en JSON"
+        print("texte du champ :", self.toJSON(self.champ_texte.get(1.0, END)))   
+
+
+
 
 
                    
@@ -190,12 +214,16 @@ class Editeur(Tk):
 
         dict_donnees = {}
 
+        derniere_cle = None # Dernière clé insérée dnas la liste
+
         for ligne in lignes: # Pour chaque ligne
             if ":" in ligne: # Si la ligne contient une paire clé/valeur
                 parties = ligne.split(":") # On découpe la ligne au niveay de la paire
                 if len(parties[0].split()) == 1: # On ne prend la clé que si elle est en un seul mot
                     cle = parties[0]
+                    print("Clé courante :", cle)
                     cles.append(cle) # On ajoute la clé à la liste
+                    print("Toutes les clés:", cles)
 
                 else: # Si la clé n'est pas en un seul mot
                     derniere_cle = cles[len(cles) -1] # On prend la dernière clé qui a été ajoutée
@@ -203,7 +231,12 @@ class Editeur(Tk):
 
                 if len(parties) > 1: # Si la ligne a été découpée en plus de deux parties
                     valeur = parties[1] # On enregistre la valeur de chaque clé dans une variable
-                    dict_donnees[cle] = valeur      
+                    print("Valeur de la clé :", valeur)
+                    if cle != derniere_cle: # Si la clé ne correspond pas à la dernière insérée
+                        dict_donnees[cle] = valeur
+
+                    else: # Sinon
+                        dict_donnees[cle] += valeur   # On met à jour l'ancienne clé       
 
                             
                         
@@ -280,7 +313,7 @@ class Editeur(Tk):
             donnees = self.toJSON(self.champ_texte.get(1.0, END))[1] # On formate les données contenues dans le champ de texte au format JSON
             localisation_fichier = filedialog.asksaveasfilename(title="Où souhaitez-vous enregistrer le fichier ?", filetypes=[("Base de données JSON", "*.json")], defaultextension=".json")  # Demander à l'utilisateur où il souhaite enregistrer le fichier
             self.fichier_ouvert = localisation_fichier
-            with open(self.fichier_ouvert, "w") as f: # On ouvre le fichier en écriture
+            with open(self.fichier_ouvert, "w", encoding="utf-8") as f: # On ouvre le fichier en écriture
                 json.dump(donnees, f, indent=4)
                 f.close() # On ferme le fichier
 
@@ -310,7 +343,7 @@ class Editeur(Tk):
 
             self.donnees_enregistrees= dict(donnees_travail) # On met à jour les données enregistrées sur la version en cours de travail
 
-            with open(self.fichier_ouvert, "w") as f: # On ouvre le fichier JSON en écriture
+            with open(self.fichier_ouvert, "w", encoding="utf-8") as f: # On ouvre le fichier JSON en écriture
                 json.dump(self.donnees_enregistrees, f, indent=4)
                 f.close()       
 

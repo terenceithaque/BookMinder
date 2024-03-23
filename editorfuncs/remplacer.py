@@ -1,3 +1,5 @@
+"Remplacer un caractère ou un texte entier par un autre"
+
 # Script pour rechercher et remplacer du texte
 from tkinter import *
 from tkinter import messagebox
