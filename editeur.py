@@ -190,7 +190,6 @@ class Editeur(Tk):
             #print("Il n'y a pas eu de modifications")
             self.title(f"{os.path.basename(self.fichier_ouvert)}")
 
-        self.afficherJSON()    
 
 
     def afficherJSON(self):
