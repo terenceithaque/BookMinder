@@ -186,47 +186,38 @@ class Editeur(Tk):
         print("Lignes :", lignes)
        
 
-        lignes_resume = [] # Liste des lignes de résumé
+        cles = [] # Toutes les clés
 
-        dict_donnnees = {} # Dictionnaire pour les clés et valeurs de chaque donnée
-
-        resume = False # Savoir si l'on est en train de parcourir le résumé
+        dict_donnees = {}
 
         for ligne in lignes: # Pour chaque ligne
-            if ":" in ligne: # Si la ligne contient une valeur
-                parties = ligne.split(":", 1) # Séparer chaque ligne en clés et valeurs
+            if ":" in ligne: # Si la ligne contient une paire clé/valeur
+                parties = ligne.split(":") # On découpe la ligne au niveay de la paire
+                if len(parties[0].split()) == 1: # On ne prend la clé que si elle est en un seul mot
+                    cle = parties[0]
+                    cles.append(cle) # On ajoute la clé à la liste
 
-                if len(parties) == 2:
-                    cle, valeur = parties
+                else: # Si la clé n'est pas en un seul mot
+                    derniere_cle = cles[len(cles) -1] # On prend la dernière clé qui a été ajoutée
+                    cle = derniere_cle
 
-                    cle = cle.strip()
-                    valeur = valeur.strip()
+                if len(parties) > 1: # Si la ligne a été découpée en plus de deux parties
+                    valeur = parties[1] # On enregistre la valeur de chaque clé dans une variable
+                    dict_donnees[cle] = valeur      
 
-                
-
-                    if cle == "resume" and resume==False: # Si la clé est le résumé du livre
-                        resume = True # On parcoure le résumé
-                        lignes_resume.append(valeur)
-
-                    elif resume: # Si l'on a déjà commencé à parcourir le résumé
-                            lignes_resume.append(valeur)
                             
                         
 
-                    else:
-                        resume = False
-                        dict_donnnees[cle] = valeur
-                        #resume = False   
+                    
 
 
             
-        dict_donnnees["resume"] = "\n".join(ligne for ligne in lignes_resume) # Joindre toutes les lignes de résumé dans une seule chaîne de caractères
 
 
-        print("Résumé dans le dictionnaire :", dict_donnnees["resume"])
-        donnees_json = json.dumps(dict_donnnees, indent=4)
+        #print("Résumé dans le dictionnaire :", dict_donnees["resume"])
+        donnees_json = json.dumps(dict_donnees, indent=4)
         #print("Données json :", donnees_json)
-        return donnees_json, dict_donnnees    
+        return donnees_json, dict_donnees    
 
 
 
