@@ -62,9 +62,10 @@ class Application(Tk):
         self.emplacement_favoris = emplacement_favoris() # Emplacement des lectures favorites
         if lister_lectures_favorites() is not [] and self.emplacement_favoris is not None:
             for lecture in lister_lectures_favorites():
-                chemin_lecture = os.path.join(self.emplacement_favoris, lecture)
-                self.menu_favoris.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture:Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture))
-        
+                for dirpath, dirname, filenames in os.walk(self.emplacement_favoris): # Pour chaque dossier et fichier du dossier des favoris
+                    for lecture in filenames: # Pour chaque fichier de lectures
+                         chemin_lecture = os.path.join(dirpath, lecture)
+                         self.menu_favoris.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture)) # Commande pour ouvrir une lecture favorite dans l'éditeur
         self.barre_menus.add_cascade(label="Favoris", menu=self.menu_favoris)
 
         self.label_rechercher = Label(self, text="Rechercher une lecture :") # Label indiquant à l'utilisateur qu'il peut rechercher une lecture
