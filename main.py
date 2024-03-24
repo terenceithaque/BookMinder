@@ -4,6 +4,7 @@ from tkinter import messagebox
 from ajouter_lecture import *
 import os
 from editeur import * 
+from favoris import *
 import sys
 
 
@@ -54,6 +55,17 @@ class Application(Tk):
         self.menu_editeur.add_command(label="Ouvrir l'éditeur de lecture  F1", command=lambda:Editeur(self))  # Commande pour lancer une nouvelle instance de l'éditeur de lectures
         
         self.barre_menus.add_cascade(label="Editeur", menu=self.menu_editeur)
+
+
+        self.menu_favoris = Menu(self, tearoff=0) # Menu pour gérer les lectures favorites
+        self.menu_favoris.add_command(label="Créer un dossier Lectures favorites BookMinder", command=self.demander_creer_favoris) # Commande pour créer un dossier de favoris
+        self.emplacement_favoris = emplacement_favoris() # Emplacement des lectures favorites
+        if lister_lectures_favorites() is not [] and self.emplacement_favoris is not None:
+            for lecture in lister_lectures_favorites():
+                chemin_lecture = os.path.join(self.emplacement_favoris, lecture)
+                self.menu_favoris.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture:Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture))
+        
+        self.barre_menus.add_cascade(label="Favoris", menu=self.menu_favoris)
 
         self.label_rechercher = Label(self, text="Rechercher une lecture :") # Label indiquant à l'utilisateur qu'il peut rechercher une lecture
         self.label_rechercher.pack(fill="both")
@@ -134,6 +146,13 @@ class Application(Tk):
 
                 """for entree in self.lectures:
                     entree.bind("<Button-3>", self.afficher_menu_contextuel)"""
+                
+
+    def demander_creer_favoris(self):
+        "Demander à l'utilisateur s'il souhaite créer un dossier de favoris"
+        creer = messagebox.askyesno("Créer un dossier de favoris ?", "Cela remplacera tout dossier de favoris créé auparavant") # Demander à l'utilisateur s'il souhaite créer un nouveau dossier de favoris
+        if creer == True:     # Si l'utilisateur a confirmé son choix       
+            creer_dossier_favoris(choisir_emplacement_favoris()) # Demander à l'utilisateur où il souhaite enregistrer le dossier de favoris
 
                 
     def afficher_menu_contextuel(self, event):
