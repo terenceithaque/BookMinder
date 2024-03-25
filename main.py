@@ -60,12 +60,16 @@ class Application(Tk):
         self.menu_favoris = Menu(self, tearoff=0) # Menu pour gérer les lectures favorites
         self.menu_favoris.add_command(label="Créer un dossier Lectures favorites BookMinder", command=self.demander_creer_favoris) # Commande pour créer un dossier de favoris
         self.emplacement_favoris = emplacement_favoris() # Emplacement des lectures favorites
+        #self.favoris = [] # Liste des favoris
         if lister_lectures_favorites() is not [] and self.emplacement_favoris is not None:
-            for lecture in lister_lectures_favorites():
                 for dirpath, dirname, filenames in os.walk(self.emplacement_favoris): # Pour chaque dossier et fichier du dossier des favoris
-                    for lecture in filenames: # Pour chaque fichier de lectures
-                         chemin_lecture = os.path.join(dirpath, lecture)
-                         self.menu_favoris.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture)) # Commande pour ouvrir une lecture favorite dans l'éditeur
+                    for file in filenames: # Pour chaque fichier de lectures
+                         fichier_ajoute = False # Savoir le chemin du fichier a été ajouté au menu
+                         chemin_lecture = os.path.join(dirpath, file)
+                         if not fichier_ajoute:
+                            self.menu_favoris.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture)) # Commande pour ouvrir une lecture favorite dans l'éditeur
+                            fichier_ajoute = True
+
         self.barre_menus.add_cascade(label="Favoris", menu=self.menu_favoris)
 
         self.label_rechercher = Label(self, text="Rechercher une lecture :") # Label indiquant à l'utilisateur qu'il peut rechercher une lecture
