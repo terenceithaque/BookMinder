@@ -1,5 +1,6 @@
 # Script principal
 from tkinter import * # Importation de tkinter pour l'interface graphique
+from tkinter.ttk import Scrollbar
 from tkinter import messagebox
 from ajouter_lecture import *
 import os
@@ -92,9 +93,13 @@ class Application(Tk):
         self.label_ajouter_lecture = Label(self, text="Vous n'avez enregistré(e) aucune lecture.") # On affiche un texte pour avertir l'utilisateur qu'il n'a enregistré aucune lecture
 
         self.bouton_ajouter_lecture = Button(self, text="Ajouter une nouvelle lecture...", command=lambda:FenetreAjouter(self, self.raifraichir_liste_lecture)) # On ajoute un bouton pour permettre à l'utilisateur d'ajouter une nouvelle lecture
+        
+        self.lectures_scrollbar_packed = False # Savoir si la barre de scroll pour la liste des lectures a été intégrée à l'interface graphique ou non
+        self.lectures_scrollbar = Scrollbar(self) # Scrollbar pour la liste des lectures
+        self.lectures = Listbox(self, yscrollcommand=self.lectures_scrollbar.set) # Listbox contenant toutes les lectures ajoutées par l'utilisateur
 
-        self.lectures = Listbox(self) # Listbox contenant toutes les lectures ajoutées par l'utilisateur
-
+        self.lectures_scrollbar.config(command=self.lectures.yview)
+        self.lectures_scrollbar.pack(side=RIGHT, fill=Y)
         self.lectures_packed = False # Variable pour savoir si la liste des lectures a été intégrée à l'interface graphique ou non
         self.lectures_enregistrees =  Label(self, text="Vos lectures (cliquez pour ouvrir dans l'éditeur):")
         self.config(menu = self.barre_menus) # On configure le menu de la fenêtre comme étant la barre de menus qu'on a créée
@@ -108,6 +113,7 @@ class Application(Tk):
         self.bind("<F1>", lambda event:Editeur(self)) # L'utilisateur peut ouvrir un nouvel éditeur avec F1
         self.bind("<F5>", self.raifraichir_liste_lecture) # L'utilisateur peut également rafraîchir la liste de lectures avec F5
 
+        
 
         if os.path.exists("paths"): # Si le dossier paths existe
             if os.listdir("paths") == []: # Si le dossier paths est vide, alors on considère qu'aucune lecture n'a été enregistrée
@@ -144,8 +150,11 @@ class Application(Tk):
                            print(f"{chemin_fichier} n'existe pas")     
                        f.close() # On ferme le fichier texte
 
+                
                 self.lectures.pack(fill="both", expand=True)
+                
                 self.lectures_packed = True
+                self.lectures_scrollbar_packed = True
 
                 self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
 
@@ -216,8 +225,9 @@ class Application(Tk):
 
 
                     else:
-                        print(f"{chemin_fichier} n'existe pas")      
-                    
+                        print(f"{chemin_fichier} n'existe pas") 
+
+         
                                
 
     def rechercher_lecture(self, event=None):
