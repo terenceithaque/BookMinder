@@ -154,7 +154,7 @@ class FenetreAjouter(Toplevel):
         titre = self.supprimer_caracteres_speciaux() # Supprimer les caractères spéciaux contenus dans le titre du livre
         print(f"Titre du livre sans les caractères spéciaux {titre}")  
         enregistrer_lecture(titre, 
-                                self.annee_livre.get(), self.auteur_livre.get(), str(self.langue_selectionnee.get()), self.champ_resume.get("1.0", END)) # Enregistrer la lecture  
+                                self.annee_livre.get(), self.auteur_livre.get(), str(self.langue_selectionnee.get()), self.champ_resume.get("1.0", END), fonction_favoris=self.fenetre_maitre.actualiser_menu_favoris) # Enregistrer la lecture  
 
         fonction_rafraichir() # rafraichir la liste de lectures
 

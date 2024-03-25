@@ -153,6 +153,20 @@ class Application(Tk):
                     entree.bind("<Button-3>", self.afficher_menu_contextuel)"""
                 
 
+    def actualiser_menu_favoris(self):
+        "Actualiser le menu des favoris"
+        self.menu_favoris.delete(1, "end") # Détruire tous les boutons après le premier
+        print("Détruit tous les boutons du menu favoris")
+        if lister_lectures_favorites() is not [] and self.emplacement_favoris is not None:
+                for dirpath, dirname, filenames in os.walk(self.emplacement_favoris): # Pour chaque dossier et fichier du dossier des favoris
+                    for file in filenames: # Pour chaque fichier de lectures
+                         chemin_lecture = os.path.join(dirpath, file)
+                         self.menu_favoris.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture)) # Commande pour ouvrir une lecture favorite dans l'éditeur
+
+        self.update_idletasks()  # Mettre à jour la fenêtre             
+
+                
+
     def demander_creer_favoris(self):
         "Demander à l'utilisateur s'il souhaite créer un dossier de favoris"
         creer = messagebox.askyesno("Créer un dossier de favoris ?", "Cela remplacera tout dossier de favoris créé auparavant") # Demander à l'utilisateur s'il souhaite créer un nouveau dossier de favoris

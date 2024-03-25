@@ -17,7 +17,7 @@ def creer_fichier_chemin(titre,chemin):
 
 
 
-def enregistrer_lecture(titre_livre, annee_livre, auteur_livre, langue_titre, resume_livre):
+def enregistrer_lecture(titre_livre, annee_livre, auteur_livre, langue_titre, resume_livre, fonction_favoris=None):
     "Enregistrer une lecture comme un fichier JSON"
     if not os.path.exists("paths"): # Si le dossier paths n'a pas été créé
         creer_dossier_paths() # Créer le dossier paths, qui contient des fichiers texte dont le contenu est un chemin vers un fichier json
@@ -39,5 +39,8 @@ def enregistrer_lecture(titre_livre, annee_livre, auteur_livre, langue_titre, re
 
     with open(chemin_fichier, "w", encoding="utf-8") as jsfile: # On écrit dans le fichier JSON nouvellement créé
         json.dump(donnees_livre, jsfile, ensure_ascii=False) # On écrit les données concernant le livre
+
+    if fonction_favoris is not None: # Si la fonction pour mettre à jour le menu des favoris n'est pas définie comme étant None
+            fonction_favoris() # On met à jour le menu des favoris    
 
     
