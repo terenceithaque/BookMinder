@@ -63,13 +63,27 @@ class Application(Tk):
         self.emplacement_favoris = emplacement_favoris() # Emplacement des lectures favorites
         #self.favoris = [] # Liste des favoris
         if lister_lectures_favorites() is not [] and self.emplacement_favoris is not None:
-                for dirpath, dirname, filenames in os.walk(self.emplacement_favoris): # Pour chaque dossier et fichier du dossier des favoris
-                    for file in filenames: # Pour chaque fichier de lectures
-                         fichier_ajoute = False # Savoir le chemin du fichier a été ajouté au menu
-                         chemin_lecture = os.path.join(dirpath, file)
-                         if not fichier_ajoute:
-                            self.menu_favoris.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture)) # Commande pour ouvrir une lecture favorite dans l'éditeur
-                            fichier_ajoute = True
+                for dirpath, dirnames, filenames in os.walk(self.emplacement_favoris): # Pour chaque dossier et fichier du dossier des favoris
+                    for dir in dirnames:
+                        for element in os.listdir(self.emplacement_favoris): # Pour chaque fichier de lectures
+                            
+                            fichier_ajoute = False # Savoir le chemin du fichier a été ajouté au menu
+                            chemin_lecture = os.path.join(dirpath, element)
+                            if os.path.isfile(chemin_lecture): # Si l'élément est un fichier
+                               
+                                if not fichier_ajoute:
+                                    self.menu_favoris.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture)) # Commande pour ouvrir une lecture favorite dans l'éditeur
+                                    fichier_ajoute = True
+
+                    for dir in dirnames:    # Pour chaque dossier
+                        menu_dossier = Menu(self.menu_favoris,  tearoff=0) # Ajouter un menu contenant les lectures présentes dans le dossier
+                        chemin_dossier = os.path.join(dirpath, dir)
+                        for file in os.listdir(chemin_dossier): # Pour chaque fichier du dossier
+                            print(file)
+                            chemin_lecture = os.path.join(chemin_dossier, file) # Joindre le dossier du fichier et le fichier lui-même afin de former un chemin
+                            menu_dossier.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture))
+                            menu_dossier
+                        self.menu_favoris.add_cascade(label=dir, menu=menu_dossier)     
 
         self.barre_menus.add_cascade(label="Favoris", menu=self.menu_favoris)
 
@@ -142,8 +156,9 @@ class Application(Tk):
                        print(chemin_fichier)                 
                            
                        if os.path.exists(chemin_fichier): # Si le chemin contenu dans le fichier existe
-                            print(f"{chemin_fichier} existe")  
-                            self.lectures.insert(END, titre_livre)
+                            print(f"{chemin_fichier} existe")
+                            if not titre_livre in self.lectures.get(0, END):  
+                                self.lectures.insert(END, titre_livre)
                             self.titres = [titre for titre in self.lectures.get(0, END)] # On met à jour les titres
 
                        else:
@@ -164,13 +179,38 @@ class Application(Tk):
 
     def actualiser_menu_favoris(self):
         "Actualiser le menu des favoris"
-        self.menu_favoris.delete(1, "end") # Détruire tous les boutons après le premier
+
+        """for item in self.menu_favoris.winfo_children(): # Pour chaque item du menu favoris
+            if isinstance(item, Menu): # Si l'item est un sous-menu
+                continue # On ne détruit pas le sous-menu
+
+            item.destroy()"""
+        
+        self.menu_favoris.delete(1, "end") # Détruire tous les boutons du menu favoris sauf le premier
+
+
         print("Détruit tous les boutons du menu favoris")
         if lister_lectures_favorites() is not [] and self.emplacement_favoris is not None:
-                for dirpath, dirname, filenames in os.walk(self.emplacement_favoris): # Pour chaque dossier et fichier du dossier des favoris
-                    for file in filenames: # Pour chaque fichier de lectures
-                         chemin_lecture = os.path.join(dirpath, file)
-                         self.menu_favoris.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture)) # Commande pour ouvrir une lecture favorite dans l'éditeur
+                     for dirpath, dirnames, files in os.walk(self.emplacement_favoris): # Pour chaque fichier de lectures
+                            
+                            fichier_ajoute = False # Savoir le chemin du fichier a été ajouté au menu
+                            for file in files: # Pour chaque fichier
+                                
+                                if file in os.listdir(self.emplacement_favoris): # Si le fichier est à la racine des favoris
+                                    chemin = os.path.join(self.emplacement_favoris, file) # Chemin complet vers le fichier                                                          
+                                    if not fichier_ajoute:
+                                        self.menu_favoris.add_command(label=chemin, command=lambda chemin_lecture=chemin: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin)) # Commande pour ouvrir une lecture favorite dans l'éditeur
+                                        fichier_ajoute = True
+
+                            for dir in dirnames: # Pour chaque dossier 
+                                menu_dossier = Menu(self.menu_favoris, tearoff=0) # Créer un sous-menu pour le dossier
+                                chemin = os.path.join(dirpath, dir) # Chemin complet du dossier
+                                for element in os.listdir(chemin): # Pour chaque élément du sous-dossier
+                                    chemin_lecture = os.path.join(chemin, element) # Chemin complet vers l'élément
+                                    if os.path.isfile(chemin_lecture):  # Si l'élément est un fichier
+                                            menu_dossier.add_command(label=chemin_lecture, command=lambda chemin_lecture=chemin_lecture: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_lecture))
+                                self.menu_favoris.add_cascade(label=dir, menu=menu_dossier)
+
 
         self.update_idletasks()  # Mettre à jour la fenêtre             
 
