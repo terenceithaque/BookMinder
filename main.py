@@ -177,20 +177,23 @@ class Application(Tk):
 
     def ajouter_sous_menus(self, dirpath, parent_menu):
         "Ajouter des  sous-menus pour chaque sous-dossier des favoris"
-        for dir in os.listdir(dirpath): # Pour chaque élément du dossier
-            chemin = os.path.join(dirpath, dir) # Chemin complet vers l'élément
+        try:
+            for dir in os.listdir(dirpath): # Pour chaque élément du dossier
+                chemin = os.path.join(dirpath, dir) # Chemin complet vers l'élément
 
-            if os.path.isdir(chemin): # Si le chemin mène vers un dossier
+                if os.path.isdir(chemin): # Si le chemin mène vers un dossier
 
-                menu_dossier = Menu(parent_menu, tearoff=0) # Créer un sous-menu pour le dossier
-                parent_menu.add_cascade(label=dir, menu=menu_dossier)
+                    menu_dossier = Menu(parent_menu, tearoff=0) # Créer un sous-menu pour le dossier
+                    parent_menu.add_cascade(label=dir, menu=menu_dossier)
 
 
-                self.ajouter_sous_menus(chemin, menu_dossier) # On appelle la méthode récursivement pour ajouter de sous-menus pour chaque sous-dossier
+                    self.ajouter_sous_menus(chemin, menu_dossier) # On appelle la méthode récursivement pour ajouter de sous-menus pour chaque sous-dossier
 
-            else: # Si l'élément est un fichier
-                parent_menu.add_command(label=dir, command=lambda chemin=chemin: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin)) # Ajouter une commande au menu parent pour ouvrir le fichier
-    
+                else: # Si l'élément est un fichier
+                    parent_menu.add_command(label=dir, command=lambda chemin=chemin: Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin)) # Ajouter une commande au menu parent pour ouvrir le fichier
+        
+        except FileNotFoundError: # Si le dossier des favoris ou un fichier est introuvable
+            messagebox.showerror(f"'{dirpath}' est introuvable", f"Le dossier '{dirpath}' est introuvable. \n - Si le dossier se trouve sur un périphérique de stockage externe, assurez-vous de connecter le périphérique à votre ordinateur pour résoudre l'erreur. \n - Peut-être que le dossier a été purement et simplement supprimé.") # Afficher un message d'erreur
     
     def actualiser_menu_favoris(self):
         "Actualiser le menu des favoris"
