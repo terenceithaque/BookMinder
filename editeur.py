@@ -32,6 +32,9 @@ class Editeur(Tk):
 
         editeurs.append(self) # On ajoute le nouvel éditeur à la liste des éditeurs ouverts
 
+
+        self.app_maitre = application_maitre # Application maître
+
         
 
         self.text_scrollbar = textscroll(self) # Barre de défilement verticale pour le texte
@@ -173,6 +176,16 @@ class Editeur(Tk):
         self.title(f"{os.path.basename(nom_fichier)} - Editeur de lecture")
 
         self.fichier_existant = True # Le fichier existe
+
+
+
+    def get_text(self):
+        "Obtenir le texte contenu dans le champ"
+        return self.champ_texte.get(1.0, END) # Retourner l'entièreté du contenu du champ de texte
+    
+    def on_keyrelease(self):
+        "Gérer les fonctions à appeler lors de la pression des touches du clavier dans le champ de texte"
+        self.mettre_a_jour_titre()    
 
 
     def mettre_a_jour_titre(self, event):
@@ -318,6 +331,10 @@ class Editeur(Tk):
 
 
                 self.fichier_existant = True # Maintenant, le fichier existe
+
+
+                if "Lectures favorites BookMinder" in localisation_fichier: # Si le fichier est enregistré dans les favoris
+                    self.app_maitre.actualiser_menu_favoris() # Mettre à jour le menu des favoris
 
                 self.title(f"{os.path.basename(self.fichier_ouvert)}")
 

@@ -57,7 +57,7 @@ class Application(Tk):
         
         self.barre_menus.add_cascade(label="Editeur", menu=self.menu_editeur)
 
-
+        
         self.menu_favoris = Menu(self, tearoff=0) # Menu pour gérer les lectures favorites
         self.menu_favoris.add_command(label="Créer un dossier Lectures favorites BookMinder", command=self.demander_creer_favoris) # Commande pour créer un dossier de favoris
         self.emplacement_favoris = emplacement_favoris() # Emplacement des lectures favorites
