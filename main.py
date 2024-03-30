@@ -268,6 +268,8 @@ class Application(Tk):
                             self.lectures.insert(END, titre_livre)
                         self.titres = [titre for titre in self.lectures.get(0, END)]
 
+                        if "Lectures favorites BookMinder" in chemin_fichier: # Si le fichier se trouve dans les favoris
+                            self.actualiser_menu_favoris() # Actualiser le menu des favoris
 
                     else:
                         print(f"{chemin_fichier} n'existe pas") 
