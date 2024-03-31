@@ -9,6 +9,7 @@ from favoris import *
 import sys
 
 
+
 def chemin_ressource(chemin):
     "Trouver le chemin d'un fichier"
     try:

@@ -9,6 +9,8 @@ import json
 import os
 import editorfuncs.copier_coller as copier # On importe le script copier_coller du dossier editorfuncs pour pouvoir copier des éléments
 import editorfuncs.remplacer as remplacer # On importe le script remplacer pour remplacer du texte
+import undo_redo
+
 
 editeurs = [] # Liste des éditeurs ouverts
 
@@ -39,7 +41,7 @@ class Editeur(Tk):
 
         self.text_scrollbar = textscroll(self) # Barre de défilement verticale pour le texte
 
-        self.champ_texte = Text(self, yscrollcommand=self.text_scrollbar.set) # Champ de texte dans lequel sont affichées les données d'un fichier JSON ouvert
+        self.champ_texte = Text(self, yscrollcommand=self.text_scrollbar.set, undo=True) # Champ de texte dans lequel sont affichées les données d'un fichier JSON ouvert
         self.text_scrollbar.config(command=self.champ_texte.yview)
         self.text_scrollbar.pack(side=RIGHT, fill=Y)
         self.champ_texte.pack(fill="both", expand=True)
@@ -92,6 +94,8 @@ class Editeur(Tk):
 
         self.menu_edition = Menu(self, tearoff=0) # Menu "Edition"
         self.menu_edition.add_command(label="Remplacer", command=lambda:remplacer.afficher_dialogue_remplacer(self)) # Commande pour afficher la boîte de dialoge pour remplacer un texte 
+        self.menu_edition.add_command(label="Annuler/Défaire Ctrl + Z", command=lambda:undo_redo.undo(self.champ_texte)) # L'utilisateur peut défaire la dernière action
+        self.menu_edition.add_command(label="Refaire Ctrl + Y", command=lambda:undo_redo.redo(self.champ_texte)) # L'utilisateur peut refaire la dernière action
         self.menu_edition.add_command(label="Copier Ctrl + C", command=lambda:copier.copier(widget_texte=self.champ_texte)) # Commande pour copier du texte sélectionné 
         self.menu_edition.add_command(label="Couper Ctrl + X", command=lambda:copier.couper(widget_texte=self.champ_texte)) # Commande pour couper du texte sélectionné
         self.menu_edition.add_command(label="Coller Ctrl+V", command=lambda:copier.coller(widget_texte=self.champ_texte)) # Commande pour coller un élément du presse-papiers
@@ -103,7 +107,7 @@ class Editeur(Tk):
 
         
 
-        self.champ_texte.bind("<KeyRelease>", self.mettre_a_jour_titre) # Si une modification a été faite dans le champ de texte, on change le titre de la fenêtre pour indiquer qu'elle n'a pas été enregistrée
+        self.champ_texte.bind("<KeyRelease>", self.on_keyrelease) # Si une touche est pressée quand le champ de texte a le focus, faire toutes les actions nécessaires
 
         self.bind("<Control-o>", lambda event:self.ouvrir_fichier(event, dialogue=True))
 
@@ -118,6 +122,10 @@ class Editeur(Tk):
 
         self.bind("<Control-q>", application_maitre.quitter)
 
+
+        self.bind("<Control-z>", lambda event: undo_redo.undo(self.champ_texte)) # Défaire la dernière action 
+
+        self.bind("<Control-y>", lambda event: undo_redo.redo(self.champ_texte)) # Refaire la dernière action
 
         self.raccourcis_claviers = ["<Control-o>", "<Control-s>"] # Liste des raccourcis clavier de l'éditeur
 
@@ -183,9 +191,10 @@ class Editeur(Tk):
         "Obtenir le texte contenu dans le champ"
         return self.champ_texte.get(1.0, END) # Retourner l'entièreté du contenu du champ de texte
     
-    def on_keyrelease(self):
+    def on_keyrelease(self, event):
         "Gérer les fonctions à appeler lors de la pression des touches du clavier dans le champ de texte"
-        self.mettre_a_jour_titre()    
+        self.mettre_a_jour_titre(event)   # Mettre à jour le titre de la fenêtre pour indiquer si des modifications ont été apportées
+
 
 
     def mettre_a_jour_titre(self, event):

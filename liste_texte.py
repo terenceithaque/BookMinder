@@ -1,1 +1,0 @@
-"liste_texte.py permet de lister les différentes versions d'un même texte"
