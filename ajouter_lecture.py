@@ -117,7 +117,8 @@ class FenetreAjouter(Toplevel):
                                      "est" : "Estonien (est)"} # Dictionnaire comprennant les langues détectées et les options correspondantes
         
         titre_livre = self.titre_livre.get() # Obtenir le texte du livre
-        langue_detectee = langdetect.detect(titre_livre) # On détecte la langue du titre du livre
+        if titre_livre != "": # Si le titre du livre n'est pas vide
+            langue_detectee = langdetect.detect(titre_livre) # On détecte la langue du titre du livre
         try:
             if langue_detectee in options_langues_detectees: # Si la langue détectée est dans les options
                 option = options_langues_detectees[langue_detectee] # Option correspondante à la langue détectée

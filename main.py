@@ -14,6 +14,7 @@ def chemin_ressource(chemin):
     "Trouver le chemin d'un fichier"
     try:
         base_path = sys._MEIPASS # PyInstaller crée un dossier temp et stocke les chemins dans _MEIPASS
+        print("chemin dun dossier temporaire :", base_path)
 
     except Exception:
         base_path = os.path.abspath(".")
@@ -175,8 +176,11 @@ class Application(Tk):
                 self.lectures_packed = True
                 self.lectures_scrollbar_packed = True
 
-                self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
+                self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event)) # L'utilisateur peut ouvrir une lecture avec un double clic-gauche
 
+                self.lectures.bind("<Double-2>", lambda event: self.ouvrir_lecture(from_list=True, event=event)) # L'utilisateur peut ouvrir une lecture avec le double clic molette
+
+                self.lectures.bind("<Double-3>", lambda event: self.ouvrir_lecture(from_list=True, event=event)) # L'utilisateur peut ouvrir une lecture avec le double clic-droit
                 """for entree in self.lectures:
                     entree.bind("<Button-3>", self.afficher_menu_contextuel)"""
                 
@@ -282,6 +286,7 @@ class Application(Tk):
 
                     else:
                         print(f"{chemin_fichier} n'existe pas") 
+
 
 
          
