@@ -149,6 +149,11 @@ class Application(Tk):
                        titre_fichier = fichier[7:] # Titre du livre comme il est contenu dans le fichier
                        titre_livre = titre_fichier
                        titre_livre = titre_livre.replace(".txt", "")
+                       
+                       if titre_livre not in self.titres: # Si le titre n'a pas été ajouté aux titres enregistrés
+                            self.titres.append(titre_livre) # Ajouter le titre du livre à la liste des lectures enregistrées
+
+
                                
                                
 
@@ -156,9 +161,9 @@ class Application(Tk):
                            
                        if os.path.exists(chemin_fichier): # Si le chemin contenu dans le fichier existe
                             print(f"{chemin_fichier} existe")
-                            if not titre_livre in self.lectures.get(0, END):  
-                                self.lectures.insert(END, titre_livre)
-                            self.titres = [titre for titre in self.lectures.get(0, END)] # On met à jour les titres
+                            for titre in self.titres: # Pour chaque titre enregistré 
+                                if titre not in self.lectures.get(0, END): # Si le titre n' a pas déjà été inséré
+                                    self.lectures.insert(END, titre)
 
                        else:
                            print(f"{chemin_fichier} n'existe pas")     
@@ -241,6 +246,8 @@ class Application(Tk):
     
     def raifraichir_liste_lecture(self, event=None):
         "Rafraîchir l'état de la liste des lectures"
+
+        self.titres = [] # On vide la liste des lectures
         if not self.lectures_packed: # Si la liste des lectures n'a pas été intégrée à l'interface graphique
             self.lectures.pack(fill="both", expand=True)
             self.lectures.bind("<Double-1>", lambda event: self.ouvrir_lecture(from_list=True, event=event))
@@ -265,8 +272,9 @@ class Application(Tk):
                     if os.path.exists(chemin_fichier):  # Si le chemin existe
                         print(f"{chemin_fichier} existe")  
                         titre_livre = titre_livre.replace(".json", "")
-                        if titre_livre not in self.titres:
-                            self.lectures.insert(END, titre_livre)
+                        if titre_livre not in self.titres: 
+                            if titre_livre not in self.lectures.get(0, END): # Si le titre n'a pas déjà été inséré
+                                self.lectures.insert(END, titre_livre)
                         self.titres = [titre for titre in self.lectures.get(0, END)]
 
                         if "Lectures favorites BookMinder" in chemin_fichier: # Si le fichier se trouve dans les favoris
@@ -274,6 +282,7 @@ class Application(Tk):
 
                     else:
                         print(f"{chemin_fichier} n'existe pas") 
+
 
          
                                
