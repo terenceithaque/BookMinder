@@ -213,8 +213,8 @@ class Application(Tk):
                 continue # On ne détruit pas le sous-menu
 
             item.destroy()"""
-        
-        self.menu_favoris.delete(1, "end") # Détruire tous les boutons du menu favoris sauf le premier
+        if self.menu_favoris.index("end") > 1: # Si le menu des favoris a plus de 1 bouton
+            self.menu_favoris.delete(1, "end") # Détruire tous les boutons du menu favoris sauf le premier
     
     
 

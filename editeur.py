@@ -55,6 +55,9 @@ class Editeur(Tk):
 
         self.barre_menus = Menu(self, tearoff=0) # Barre de menus de l'éditeur
 
+
+        self.file_saved = False # Savoir si les données ont été enregistrées dans un fichier
+
         self.menu_fichier = Menu(self, tearoff=0) # Menu "Fichier"
 
         self.fichier_ouvert = "" # Fichier ouvert dans l'éditeur
@@ -142,7 +145,7 @@ class Editeur(Tk):
             if nom_fichier:
                 with open(nom_fichier, "r") as f: # On ouvre le fichier JSON en lecture
                     donnees = json.load(f) # Charger le fichier JSON en mémoire
-                    print(donnees)
+                    #print(donnees)
                     f.close() # On ferme le fichier JSON
 
                     donnees_formatees = json.dumps(donnees, indent=4, ensure_ascii=False) # Données du fichier JSON formattées sous forme de chaîne de caractères normale
@@ -216,7 +219,7 @@ class Editeur(Tk):
 
     def afficherJSON(self):
         "Afficher le texte du champ converti en JSON"
-        print("texte du champ :", self.toJSON(self.champ_texte.get(1.0, END)))   
+        #print("texte du champ :", self.toJSON(self.champ_texte.get(1.0, END)))   
 
 
 
@@ -228,7 +231,7 @@ class Editeur(Tk):
     def toJSON(self, donnees):
         "Convertir des données dans un format JSON"
         lignes = donnees.split("\n") # Séparer les données par des lignes
-        print("Lignes :", lignes)
+        #print("Lignes :", lignes)
        
 
         cles = [] # Toutes les clés
@@ -242,9 +245,9 @@ class Editeur(Tk):
                 parties = ligne.split(":") # On découpe la ligne au niveay de la paire
                 if len(parties[0].split()) == 1: # On ne prend la clé que si elle est en un seul mot
                     cle = parties[0]
-                    print("Clé courante :", cle)
+                    #print("Clé courante :", cle)
                     cles.append(cle) # On ajoute la clé à la liste
-                    print("Toutes les clés:", cles)
+                    #print("Toutes les clés:", cles)
 
                 else: # Si la clé n'est pas en un seul mot
                     derniere_cle = cles[len(cles) -1] # On prend la dernière clé qui a été ajoutée
@@ -252,7 +255,7 @@ class Editeur(Tk):
 
                 if len(parties) > 1: # Si la ligne a été découpée en plus de deux parties
                     valeur = parties[1] # On enregistre la valeur de chaque clé dans une variable
-                    print("Valeur de la clé :", valeur)
+                    #print("Valeur de la clé :", valeur)
                     if cle != derniere_cle: # Si la clé ne correspond pas à la dernière insérée
                         dict_donnees[cle] = valeur
 
@@ -317,11 +320,11 @@ class Editeur(Tk):
             version_travail_json = json.dumps(version_travail, sort_keys=True)
             
             #print("Version enregistrée (json) :", version_enregistree_json)
-            print("Version de travail (json) :", version_travail_json)
+            #print("Version de travail (json) :", version_travail_json)
             return version_travail_json != version_enregistree_json
         
         else: # Si l'utilisateur travaille sur un nouveau fichier
-            print("Le fichier n'existe pas")
+            #print("Le fichier n'existe pas")
             version_enregistree = "" # Le contenu de la version enregistrée du fichier est vide car elle n'existe pas
             version_travail = self.toJSON(self.champ_texte.get(1.0, END))[1] # Version en cours de travail du fichier
             return version_travail != version_enregistree
@@ -331,21 +334,27 @@ class Editeur(Tk):
     def enregistrer_sous(self):
         "Enregistrer le contenu du champ de texte dans un nouveau fichier au format JSON"
         try:
+
             donnees = self.toJSON(self.champ_texte.get(1.0, END))[1] # On formate les données contenues dans le champ de texte au format JSON
             localisation_fichier = filedialog.asksaveasfilename(title="Où souhaitez-vous enregistrer le fichier ?", filetypes=[("Base de données JSON", "*.json")], defaultextension=".json")  # Demander à l'utilisateur où il souhaite enregistrer le fichier
-            self.fichier_ouvert = localisation_fichier
-            with open(self.fichier_ouvert, "w", encoding="utf-8") as f: # On ouvre le fichier en écriture
-                json.dump(donnees, f, indent=4)
-                f.close() # On ferme le fichier
+            if localisation_fichier != "": # Si l'utilisateur n'a pas cliqué sur Annuler
+                self.fichier_ouvert = localisation_fichier
+                with open(self.fichier_ouvert, "w", encoding="utf-8") as f: # On ouvre le fichier en écriture
+                    json.dump(donnees, f, indent=4)
+                    f.close() # On ferme le fichier
 
 
-                self.fichier_existant = True # Maintenant, le fichier existe
+                    self.fichier_existant = True # Maintenant, le fichier existe
 
 
-                if "Lectures favorites BookMinder" in localisation_fichier: # Si le fichier est enregistré dans les favoris
-                    self.app_maitre.actualiser_menu_favoris() # Mettre à jour le menu des favoris
+                    if "Lectures favorites BookMinder" in localisation_fichier: # Si le fichier est enregistré dans les favoris
+                        self.app_maitre.actualiser_menu_favoris() # Mettre à jour le menu des favoris
 
-                self.title(f"{os.path.basename(self.fichier_ouvert)}")
+                    self.title(f"{os.path.basename(self.fichier_ouvert)}")
+
+                    self.file_saved = True # Les données ont été enregistrées dans un fichier
+            
+            
 
         except FileNotFoundError:
             pass
@@ -356,7 +365,13 @@ class Editeur(Tk):
     def enregistrer(self, event=None):
         "Enregistrer les modifications faites à un fichier JSON"
         if not self.fichier_existant or self.fichier_ouvert == "": # Si l'utilisateur n'a pas enregistré les données dans un fichier ou que le fichier n'est pas ouvert
-            self.enregistrer_sous()
+            if not self.fichier_existant: # Si le fichier n'existe pas
+                print("Les données n'ont pas été enregistrées sous forme de fichier")
+
+            if self.fichier_ouvert == "": # Si l'utilisateur n'a ouvert aucun fichier
+                print("Aucun fichier n'a été ouvert")  
+            if not self.file_saved: # Si les données n'ont pas été enregistrées dans un fichier
+                self.enregistrer_sous()
 
         else:
             if self.comparer_versions(): # Si des modifications ont été faites au fichier
