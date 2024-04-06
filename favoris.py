@@ -37,18 +37,19 @@ def emplacement_favoris():
 def creer_dossier_favoris(emplacement, icone):
     "Créer un dossier Lectures favorites"
     global emplacement_dossier 
-    try:
-        emplacement_dossier = emplacement
-        os.makedirs(f"{emplacement_dossier}/Lectures favorites BookMinder") # Créer un dossier Lectures favorites
-        icone = chemin_ressource("app_icon.ico")
-        notification.notify(title="Le dossier Lectures favorites a été créé avec succès", message=f"Le dossier Lectures favorites ({emplacement_dossier}/Lectures favorites) a été créé avec succès.", app_icon=icone)
-        with open("chemin_favoris.txt", "w") as f: # Créer un fichier pour stocker le chemin du dossier des favoris
+    #try:
+    emplacement_dossier = emplacement
+    os.makedirs(f"{emplacement_dossier}/Lectures favorites BookMinder") # Créer un dossier Lectures favorites
+    icone = chemin_ressource("app_icon.ico")
+    notification.notify(title="Le dossier Lectures favorites a été créé avec succès", message=f"Le dossier Lectures favorites ({emplacement_dossier}/Lectures favorites) a été créé avec succès.", app_icon=icone)
+    with open("chemin_favoris.txt", "w") as f: # Créer un fichier pour stocker le chemin du dossier des favoris
             print("Emplacement des favoris :", emplacement_dossier + "/" + "Lectures favorites BookMinder")
             f.write(emplacement_dossier + "/" + "Lectures favorites BookMinder")
+            f.close()
 
         
-    except: # En cas d'erreur
-        notification.notify(title="Un problème est survenu", message="Le dossier Lectures favorites n'a pas pû être créé car une erreur s'est produite", app_icon=icone)
+    #except: # En cas d'erreur
+        #notification.notify(title="Un problème est survenu", message="Le dossier Lectures favorites n'a pas pû être créé car une erreur s'est produite", app_icon=icone)
 def lister_lectures_favorites():
     "Lister toutes les lectures favorites de l'utilisateur"
     emplacement = emplacement_favoris() # Obtenir l'emplacement du dossier des favoris
