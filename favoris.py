@@ -34,7 +34,7 @@ def emplacement_favoris():
         return None
 
 
-def creer_dossier_favoris(emplacement):
+def creer_dossier_favoris(emplacement, icone):
     "Créer un dossier Lectures favorites"
     global emplacement_dossier 
     try:

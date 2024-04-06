@@ -235,7 +235,7 @@ class Application(Tk):
         "Demander à l'utilisateur s'il souhaite créer un dossier de favoris"
         creer = messagebox.askyesno("Créer un dossier de favoris ?", "Cela remplacera tout dossier de favoris créé auparavant") # Demander à l'utilisateur s'il souhaite créer un nouveau dossier de favoris
         if creer == True:     # Si l'utilisateur a confirmé son choix       
-            creer_dossier_favoris(choisir_emplacement_favoris()) # Demander à l'utilisateur où il souhaite enregistrer le dossier de favoris
+            creer_dossier_favoris(choisir_emplacement_favoris(), self.chemin_icone) # Demander à l'utilisateur où il souhaite enregistrer le dossier de favoris
 
                 
     def afficher_menu_contextuel(self, event):
