@@ -49,6 +49,7 @@ class Application(Tk):
 
         self.menu_lecture.add_command(label="Ouvrir une lecture dans l'éditeur... Ctrl + O", command=lambda:self.ouvrir_lecture(from_list=False, event=None))
         
+        self.menu_lecture.add_command(label="Déplacer une lecture vers les favoris...", command=lambda:self.deplacer_lecture_favoris(dialogue=True)) # Commande pour déplacer une lecture vers les favoris
         self.menu_lecture.add_command(label="Quitter l'application... Ctrl + Q", command=self.quitter)
         
 
@@ -186,9 +187,24 @@ class Application(Tk):
                     entree.bind("<Button-3>", self.afficher_menu_contextuel)"""
                 
 
-    def deplacer_lecture_favoris(self):
+    def deplacer_lecture_favoris(self, dialogue=True):
         "Déplacer une lecture vers les favoris"
-        pass
+        if dialogue: # Si on doit afficher une boîte de dialogue à l'utilisateur pour demander quel fichier de lecture déplacer vers les favoris
+            chemin_fichier = filedialog.askopenfilename(title="Quelle lecture souhaitez-vous déplacer vers les favoris", filetypes=[("Base de données JSON", "*.json")]) # Demander à l'utilisateur l'emplacement du fichier à déplacer vers les favoris
+            print("Fichier sélectionné :", os.path.basename(chemin_fichier))
+            if self.emplacement_favoris is not None and os.path.exists(self.emplacement_favoris): # Si le dossier des favoris existe
+                if not self.emplacement_favoris in chemin_fichier: # Si le fichier n'est pas déjà dans les favoris
+                    move.move_file(chemin_fichier, self.emplacement_favoris) # Déplacer le fichier vers les favoris
+                    lecture_deplacee = os.path.basename(chemin_fichier)
+                    notification.notify(title="Lecture déplacée avec succès", message=f"La lecture {lecture_deplacee} a bien été déplacée vers {os.path.basename(self.emplacement_favoris)}") # Envoyer une notification à l'utilisateur concernant la réussite du déplacement du fichier
+                
+                else: # Si le fichier est déjà présent dans les favoris
+                    lecture = os.path.basename(chemin_fichier)
+                    notification.notify(title="La lecture est déjà présente dans vos favoris", message=f"La lecture {lecture} n' a pas été déplacée car déjà présente dans vos favoris.") # Indiquer à l'utilisateur que le fichier est déjà dans les favoris
+
+            else: # Si le dossier des favoris n'existe pas
+                notification.notify(title="Le dossier des favoris n'existe pas", message=f"La lecture n'a pas été déplacée car le dossier des favoris n'existe pas") # Indiquer à l'utilisateur que le dossier de favoris n'existe pas
+    
     
     def ajouter_sous_menus(self, dirpath, parent_menu):
         "Ajouter des  sous-menus pour chaque sous-dossier des favoris"
@@ -239,9 +255,10 @@ class Application(Tk):
     def demander_creer_favoris(self):
         "Demander à l'utilisateur s'il souhaite créer un dossier de favoris"
         creer = messagebox.askyesno("Créer un dossier de favoris ?", "Cela remplacera tout dossier de favoris créé auparavant") # Demander à l'utilisateur s'il souhaite créer un nouveau dossier de favoris
-        if creer == True:     # Si l'utilisateur a confirmé son choix       
-            creer_dossier_favoris(choisir_emplacement_favoris(), self.chemin_icone) # Demander à l'utilisateur où il souhaite enregistrer le dossier de favoris
-
+        if creer == True:     # Si l'utilisateur a confirmé son choix   
+            emplacement_dossier = choisir_emplacement_favoris()   # Demander à l'utilisateur où il souhaite enregistrer le dossier des favoris
+            creer_dossier_favoris(emplacement_dossier, self.chemin_icone) # Demander à l'utilisateur où il souhaite enregistrer le dossier de favoris
+            self.emplacement_favoris = emplacement_dossier# Mettre à jour l'emplacement des favoris
                 
     def afficher_menu_contextuel(self, event):
         "Afficher le menu contextuel de la liste des lectures"
