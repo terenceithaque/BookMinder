@@ -7,6 +7,7 @@ import os
 from editeur import * 
 from favoris import *
 import sys
+import move
 
 
 
@@ -185,6 +186,10 @@ class Application(Tk):
                     entree.bind("<Button-3>", self.afficher_menu_contextuel)"""
                 
 
+    def deplacer_lecture_favoris(self):
+        "Déplacer une lecture vers les favoris"
+        pass
+    
     def ajouter_sous_menus(self, dirpath, parent_menu):
         "Ajouter des  sous-menus pour chaque sous-dossier des favoris"
         try:
