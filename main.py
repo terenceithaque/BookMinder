@@ -8,6 +8,7 @@ from editeur import *
 from favoris import *
 import sys
 import move
+import update_path
 
 
 
@@ -191,6 +192,7 @@ class Application(Tk):
         "Déplacer une lecture vers les favoris"
         if dialogue: # Si on doit afficher une boîte de dialogue à l'utilisateur pour demander quel fichier de lecture déplacer vers les favoris
             chemin_fichier = filedialog.askopenfilename(title="Quelle lecture souhaitez-vous déplacer vers les favoris", filetypes=[("Base de données JSON", "*.json")]) # Demander à l'utilisateur l'emplacement du fichier à déplacer vers les favoris
+            
             print("Fichier sélectionné :", os.path.basename(chemin_fichier))
             if self.emplacement_favoris is not None and os.path.exists(self.emplacement_favoris): # Si le dossier des favoris existe
                 if not self.emplacement_favoris in chemin_fichier: # Si le fichier n'est pas déjà dans les favoris
