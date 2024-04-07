@@ -16,7 +16,22 @@ def creer_fichier_chemin(titre,chemin):
         f.write(str(chemin)) # On écrit le chemin menant au fichier JSON
         id_fichier = file_id.generer_id() # Générer l'ID du fichier de lecture
         f.write("\n" + id_fichier) # Ecrire l'ID du fichier dans le fichier texte, sur une nouvelle ligne 
-        f.close() # On ferme le fichier
+
+        with open("file_ids.json", "a+") as jsfile: # Ouvrir le fichier JSON qui contient le chemin et l'ID de chaque fichier
+            data = jsfile.read() # Lire le fichier avant de le charger sous forme de JSON
+
+            if data is not "": # Si le fichier n'est pas vide
+                data = json.load(jsfile) # Charger le fichier sous forme de JSON
+
+            else: # Si le fichier est vide
+                data = {} # Créer un dictionnaire vide   
+
+            data.update({f"{chemin}": id_fichier}) # Ajouter le chemin et l'ID du fichier de lecture  au fichier JSON
+
+            json.dump(data, jsfile, indent=4) # Ecrire les données en JSON
+            jsfile.close() # Fermer le fichier JSON
+
+        f.close() # On ferme le fichier texte 
 
 
 

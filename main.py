@@ -199,7 +199,8 @@ class Application(Tk):
                     move.move_file(chemin_fichier, self.emplacement_favoris) # Déplacer le fichier vers les favoris
                     lecture_deplacee = os.path.basename(chemin_fichier)
                     notification.notify(title="Lecture déplacée avec succès", message=f"La lecture {lecture_deplacee} a bien été déplacée vers {os.path.basename(self.emplacement_favoris)}") # Envoyer une notification à l'utilisateur concernant la réussite du déplacement du fichier
-                
+
+                    
                 else: # Si le fichier est déjà présent dans les favoris
                     lecture = os.path.basename(chemin_fichier)
                     notification.notify(title="La lecture est déjà présente dans vos favoris", message=f"La lecture {lecture} n' a pas été déplacée car déjà présente dans vos favoris.") # Indiquer à l'utilisateur que le fichier est déjà dans les favoris
