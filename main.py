@@ -289,28 +289,31 @@ class Application(Tk):
             print(fichier)
             if fichier.startswith("chemin_"): # Si le fichier contient un chemin menant vers une lecture
                 with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier en lecture pour trouver le chemin menant vers une lecture
-                    contenu_fichier = f.read() # Contenu du fichier
+                    contenu_fichier = f.readlines() # Contenu du fichier
                     print(contenu_fichier)
-                    if not contenu_fichier.endswith(".json"):
-                        chemin_fichier = contenu_fichier + ".json"
+                    chemin_lecture = contenu_fichier[0] # Le chemin  pointant vers la lecture est dans la première ligne du fichier texte
+                    print("Chemin de la lecture :", chemin_lecture)
+                    if not chemin_lecture.endswith(".json"):
+                        chemin_lecture = chemin_lecture + ".json"
 
                     else:
-                        chemin_fichier = contenu_fichier    
-                    titre_livre = os.path.basename(chemin_fichier)
+                        chemin_lecture = contenu_fichier[0] 
                     
-                    if os.path.exists(chemin_fichier):  # Si le chemin existe
-                        print(f"{chemin_fichier} existe")  
+                    titre_livre = os.path.basename(chemin_lecture)
+                    
+                    if os.path.exists(chemin_lecture):  # Si le chemin existe
+                        print(f"{chemin_lecture} existe")  
                         titre_livre = titre_livre.replace(".json", "")
                         if titre_livre not in self.titres: 
                             if titre_livre not in self.lectures.get(0, END): # Si le titre n'a pas déjà été inséré
                                 self.lectures.insert(END, titre_livre)
                         self.titres = [titre for titre in self.lectures.get(0, END)]
 
-                        if "Lectures favorites BookMinder" in chemin_fichier: # Si le fichier se trouve dans les favoris
+                        if "Lectures favorites BookMinder" in chemin_lecture: # Si le fichier se trouve dans les favoris
                             self.actualiser_menu_favoris() # Actualiser le menu des favoris
 
                     else:
-                        print(f"{chemin_fichier} n'existe pas") 
+                        print(f"{chemin_lecture} n'existe pas") 
 
 
 
@@ -363,7 +366,7 @@ class Application(Tk):
                 if fichier == f"chemin_{titre_clique}.txt": # Si le fichier correspond au titre cliqué
                     print("Le titre cliqué est dans le nom du fichier")
                     with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier texte afin d'y trouver le chemin du fichier à ouvrir
-                        chemin_fichier = f.read() # Chemin du fichier JSON à ouvrir
+                        chemin_fichier = f.readlines()[0] # Chemin du fichier JSON à ouvrir
                         Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_fichier) # On ouvre le fichier JSON dans une nouvelle instance de l'éditeur
                         f.close()
 

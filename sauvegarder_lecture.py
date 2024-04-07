@@ -4,6 +4,7 @@
 from tkinter import filedialog
 import json
 import os 
+import file_id
 
 def creer_dossier_paths():
     "Créer un dossier dans lequel seront enregistrés les chemins des différents fichiers JSON contenant les lectures"
@@ -13,6 +14,8 @@ def creer_fichier_chemin(titre,chemin):
     "Créer un fichier contenant le chemin d'un fichier JSON"
     with open(f"paths/chemin_{titre}.txt", "w") as f: # On crée un fichier texte ayant comme nom le titre du livre
         f.write(str(chemin)) # On écrit le chemin menant au fichier JSON
+        id_fichier = file_id.generer_id() # Générer l'ID du fichier de lecture
+        f.write("\n" + id_fichier) # Ecrire l'ID du fichier dans le fichier texte, sur une nouvelle ligne 
         f.close() # On ferme le fichier
 
 
