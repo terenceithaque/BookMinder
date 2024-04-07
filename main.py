@@ -204,7 +204,8 @@ class Application(Tk):
 
             else: # Si le dossier des favoris n'existe pas
                 notification.notify(title="Le dossier des favoris n'existe pas", message=f"La lecture n'a pas été déplacée car le dossier des favoris n'existe pas") # Indiquer à l'utilisateur que le dossier de favoris n'existe pas
-    
+
+        self.actualiser_menu_favoris() # Actualiser le menu des favoris à la fin des opérations
     
     def ajouter_sous_menus(self, dirpath, parent_menu):
         "Ajouter des  sous-menus pour chaque sous-dossier des favoris"
