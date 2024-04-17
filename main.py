@@ -65,6 +65,7 @@ class Application(Tk):
         
         self.menu_favoris = Menu(self, tearoff=0) # Menu pour gérer les lectures favorites
         self.menu_favoris.add_command(label="Créer un dossier Lectures favorites BookMinder", command=self.demander_creer_favoris) # Commande pour créer un dossier de favoris
+        self.menu_favoris.add_separator() # Ajouter un séparateur au menu des favoris
         self.emplacement_favoris = emplacement_favoris() # Emplacement des lectures favorites
         #self.favoris = [] # Liste des favoris
         if lister_lectures_favorites() is not [] and self.emplacement_favoris is not None:
@@ -248,8 +249,9 @@ class Application(Tk):
                 continue # On ne détruit pas le sous-menu
 
             item.destroy()"""
-        if self.menu_favoris.index("end") > 1: # Si le menu des favoris a plus de 1 bouton
+        if self.menu_favoris.index("end") > 1: # Si le menu des favoris a plus de 1 bouton 
             self.menu_favoris.delete(1, "end") # Détruire tous les boutons du menu favoris sauf le premier
+            self.menu_favoris.add_separator() # Ajouter un séparateur au menu des favoris
     
     
 
