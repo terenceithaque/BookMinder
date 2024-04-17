@@ -139,17 +139,27 @@ class Application(Tk):
 
 
             else:
-                
+                #self.raifraichir_liste_lecture()
                 self.lectures_enregistrees.pack(fill="both")
                 self.lectures.pack(fill="both")
                 for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
                     print(fichier)
                     if fichier.startswith("chemin_"): # Si le nom du fichier commence par "chemin_"
                        f = open(f"paths/{fichier}", "r") # On veut lire le contenu du fichier
-                       contenu_fichier = f.read() # Contenu du fichier
-                       chemin_fichier = contenu_fichier + ".json"
-                       print(chemin_fichier)
-                       titre_livre = os.path.basename(f.read()) # On extrait le titre du livre depuis le chemin contenu dans le fichier texte
+                       contenu_fichier = f.readlines() # Contenu du fichier
+                       chemin_fichier = contenu_fichier[0].replace("\n", "") # Chemin du fichier de lecture, en remplaçant le saut à la ligne par un caractère vide
+                       print("chemin du fichier :", chemin_fichier)
+                       print("fichier divisé en pair chemin/extension :", os.path.splitext(chemin_fichier))
+                       print("extension du fichier : ", os.path.splitext(chemin_fichier)[1])
+                             
+                       if not chemin_fichier.endswith(".json"):  # Si le chemin du fichier n'a pas d'extension .json
+                            chemin_fichier += ".json" # On ajoute l'extension au chemin du fichier
+                            print("chemin du fichier mis à jour :", chemin_fichier)
+                       
+                       
+                       titre_livre = os.path.basename(chemin_fichier) # On extrait le titre du livre depuis le chemin contenu dans le fichier texte
+                       print("titre du livre :", titre_livre)
+                       print("ID du fichier :", contenu_fichier[1]) # Afficher l'ID du fichier dans la console
                        titre_fichier = fichier[7:] # Titre du livre comme il est contenu dans le fichier
                        titre_livre = titre_fichier
                        titre_livre = titre_livre.replace(".txt", "")
@@ -161,7 +171,7 @@ class Application(Tk):
                                
                                
 
-                       print(chemin_fichier)                 
+                       #print(chemin_fichier)                 
                            
                        if os.path.exists(chemin_fichier): # Si le chemin contenu dans le fichier existe
                             print(f"{chemin_fichier} existe")
@@ -170,9 +180,9 @@ class Application(Tk):
                                     self.lectures.insert(END, titre)
 
                        else:
+                           print("chemin :", chemin_fichier)
                            print(f"{chemin_fichier} n'existe pas")     
-                       f.close() # On ferme le fichier texte
-
+                       f.close() # On ferme le fichier texte    """
                 
                 self.lectures.pack(fill="both", expand=True)
                 
@@ -292,13 +302,14 @@ class Application(Tk):
                 with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier en lecture pour trouver le chemin menant vers une lecture
                     contenu_fichier = f.readlines() # Contenu du fichier
                     print(contenu_fichier)
-                    chemin_lecture = contenu_fichier[0] # Le chemin  pointant vers la lecture est dans la première ligne du fichier texte
+                    chemin_lecture = contenu_fichier[0].replace("\n", "") # Le chemin  pointant vers la lecture est dans la première ligne du fichier texte
                     print("Chemin de la lecture :", chemin_lecture)
                     if not chemin_lecture.endswith(".json"):
-                        chemin_lecture = chemin_lecture + ".json"
+                        chemin_lecture += ".json"
 
                     else:
                         chemin_lecture = contenu_fichier[0] 
+                        print("chemin de la lecture :", chemin_lecture)
                     
                     titre_livre = os.path.basename(chemin_lecture)
                     
@@ -368,7 +379,7 @@ class Application(Tk):
                     print("Le titre cliqué est dans le nom du fichier")
                     with open(f"paths/{fichier}", "r") as f: # On ouvre le fichier texte afin d'y trouver le chemin du fichier à ouvrir
                         chemin_fichier = f.readlines()[0] # Chemin du fichier JSON à ouvrir
-                        Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_fichier) # On ouvre le fichier JSON dans une nouvelle instance de l'éditeur
+                        Editeur(self).ouvrir_fichier(event=None, dialogue=False, nom_fichier=chemin_fichier.replace("\n", "")) # On ouvre le fichier JSON dans une nouvelle instance de l'éditeur
                         f.close()
 
         else: # Si l'utilisateur veut ouvrir une lecture depuis un autre endroit que la liste

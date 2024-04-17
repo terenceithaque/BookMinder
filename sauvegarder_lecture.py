@@ -12,35 +12,44 @@ def creer_dossier_paths():
 
 def creer_fichier_chemin(titre,chemin):
     "Créer un fichier contenant le chemin d'un fichier JSON"
+    print("chemin de la lecture à enregister :", chemin)
     with open(f"paths/chemin_{titre}.txt", "w") as f: # On crée un fichier texte ayant comme nom le titre du livre
+        chemin.replace("/", "\\")
         f.write(str(chemin)) # On écrit le chemin menant au fichier JSON
         id_fichier = file_id.generer_id() # Générer l'ID du fichier de lecture
         f.write("\n" + id_fichier) # Ecrire l'ID du fichier dans le fichier texte, sur une nouvelle ligne 
 
-        with open("file_ids.json", "a+") as jsfile: # Ouvrir le fichier JSON qui contient le chemin et l'ID de chaque fichier
-            data = jsfile.read() # Lire le fichier avant de le charger sous forme de JSON
-
-            if data is not "": # Si le fichier n'est pas vide
-                data = json.load(jsfile) # Charger le fichier sous forme de JSON
-
-            else: # Si le fichier est vide
-                data = {} # Créer un dictionnaire vide   
-
-            data.update({f"{chemin}": id_fichier}) # Ajouter le chemin et l'ID du fichier de lecture  au fichier JSON
-
-            json.dump(data, jsfile, indent=4) # Ecrire les données en JSON
-            jsfile.close() # Fermer le fichier JSON
+        
 
         f.close() # On ferme le fichier texte 
 
+    with open("file_ids.json", "a+") as jsfile: # Ouvrir le fichier JSON qui contient le chemin et l'ID de chaque fichier
 
+            try:
+                 data = json.load(jsfile) # Tenter de charger les données du fichier JSON
+                 print("Aucune erreur n'a eue lieu durant la lecture du fichier")
+
+            except json.JSONDecodeError: # En cas de problème lors de la lecture des données
+                print("Une erreur s'est produite durant la lecture du fichier")
+                data = {} # Initialiser les données du fichier JSON
+                jsfile.seek(0) # Déplacer le pointeur du fichier au début du fichier
+                jsfile.truncate() # Vider le fichier JSON
+
+
+
+        
+
+            data.update({f"{chemin}": id_fichier}) # Ajouter le chemin et l'ID du fichier de lecture  au fichier JSON
+            jsfile.seek(0) # Déplacer le pointeur du fichier au début du fichier
+            json.dump(data, jsfile, indent=4) # Ecrire les données en JSON
+            jsfile.close() # Fermer le fichier JSON
 
 def enregistrer_lecture(titre_livre, annee_livre, auteur_livre, langue_titre, resume_livre, fonction_favoris=None):
     "Enregistrer une lecture comme un fichier JSON"
     if not os.path.exists("paths"): # Si le dossier paths n'a pas été créé
         creer_dossier_paths() # Créer le dossier paths, qui contient des fichiers texte dont le contenu est un chemin vers un fichier json
 
-    chemin_fichier = filedialog.asksaveasfilename(title="Où voulez-vous enregistrer votre lecture ?", filetypes=[("Base de données JSON", "*.json")]) # Demander à l'utilisateur où est-ce qu'il veut enregistrer le fichier JSON
+    chemin_fichier = filedialog.asksaveasfilename(title="Où voulez-vous enregistrer votre lecture ?", filetypes=[("Base de données JSON", "*.json")], defaultextension=".json") # Demander à l'utilisateur où est-ce qu'il veut enregistrer le fichier JSON
     creer_fichier_chemin(titre_livre, chemin_fichier) # Créer un fichier texte contenant le chemin du fichier JSON nouvellement créé
 
 
