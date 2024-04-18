@@ -22,8 +22,13 @@ def creer_fichier_chemin(titre,chemin):
         
 
         f.close() # On ferme le fichier texte 
-
-    with open("file_ids.json", "a+") as jsfile: # Ouvrir le fichier JSON qui contient le chemin et l'ID de chaque fichier
+    
+    if not os.path.exists("file_ids.json"): # Si le fichier file_ids.json n'existe pas
+         with open("file_ids.json", "w") as ids_file: # Créer le fichier
+              ids_file.write(str({})) # Ecrire un dictionnaire vide
+              ids_file.close() # Fermer le fichier
+         
+    with open("file_ids.json", "r+") as jsfile: # Ouvrir le fichier JSON qui contient le chemin et l'ID de chaque fichier
 
             try:
                  data = json.load(jsfile) # Tenter de charger les données du fichier JSON
@@ -39,9 +44,9 @@ def creer_fichier_chemin(titre,chemin):
 
         
 
-            data.update({f"{chemin}": id_fichier}) # Ajouter le chemin et l'ID du fichier de lecture  au fichier JSON
+            data.update({chemin: id_fichier}) # Ajouter le chemin et l'ID du fichier de lecture  au fichier JSON
             jsfile.seek(0) # Déplacer le pointeur du fichier au début du fichier
-            json.dump(data, jsfile, indent=4) # Ecrire les données en JSON
+            json.dump(data, jsfile, indent=4, ensure_ascii=False) # Ecrire les données en JSON
             jsfile.close() # Fermer le fichier JSON
 
 def enregistrer_lecture(titre_livre, annee_livre, auteur_livre, langue_titre, resume_livre, fonction_favoris=None):

@@ -1,4 +1,5 @@
 # Script principal
+"C'est le script principal, qui gère le lancement de l'application"
 from tkinter import * # Importation de tkinter pour l'interface graphique
 from tkinter.ttk import Scrollbar
 from tkinter import messagebox
@@ -9,6 +10,7 @@ from favoris import *
 import sys
 import move
 import update_path
+import file_id # Importer file_id simplement pour lister tous les IDs de fichiers existants
 
 
 
