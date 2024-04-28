@@ -8,6 +8,7 @@ from tkinter import messagebox
 from resume import * 
 from sauvegarder_lecture import *
 import sys
+import platform
 
 
 def chemin_ressource(chemin):
@@ -141,7 +142,19 @@ class FenetreAjouter(Toplevel):
     def supprimer_caracteres_speciaux(self):
         "Supprimer les caractères spéciaux contenus dans le titre" 
         titre = self.titre_livre.get() # Titre du livre
-        caracteres_interdits = ["<", ">", ":", '"', "/", "'\'","|", "?", "*"] # Liste des caractères interdits dans un nom de fichier
+        if platform.system() == "Windows": # Si le système d'exploitation de l'utilisateur est un Windows
+            print("Le système est Windows")
+            global caracteres_interdits
+            caracteres_interdits = ["<", ">", ":", '"', "/", "'\'","|", "?", "*"] # Liste des caractères interdits dans un nom de fichier pour Windows
+
+        elif platform.system() == "Darwin": # Si le système d'exploitation est macOS
+            print("Le système est macOS")
+            caracteres_interdits = [":", "/", "\\"] # Liste des caracttères interdits dans un nom de fichier pour macOS
+
+        elif platform.system() == "Linux": # Si le système d'exploitation est un Linux
+            print("Le système est Linux")
+            caracteres_interdits = ["/"] # Liste des caractères interdits pour Windows
+
     
         for caractere in caracteres_interdits: # Pour chaque caractère interdit
             if caractere in titre: # Si le titre contient un caractère interdit

@@ -41,10 +41,10 @@ def generer_id():
         letter = letters[random.randrange(len(letters))] # Choisir une lettre au hasard dans la liste des lettres
         ID += letter # Ajouter la lettre à l'ID
     
-    while ID in ids: # Si l'ID est a déjà été généré
+    while ID in ids: # Si l'ID généré existe déjà dans la liste, cela veut dire qu'il n'est pas unique
         print(ID) 
         print(f"Régénération de l'ID {ID} car non unique")
-        generer_id() # Générér un nouvel ID
+        generer_id() # On génère un à nouveau un ID tant qu'il n'est pas unique
 
 
     ids.append(ID) # Ajouter l'ID à la liste

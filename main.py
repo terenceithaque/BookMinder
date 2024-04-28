@@ -150,19 +150,20 @@ class Application(Tk):
                     if fichier.startswith("chemin_"): # Si le nom du fichier commence par "chemin_"
                        f = open(f"paths/{fichier}", "r") # On veut lire le contenu du fichier
                        contenu_fichier = f.readlines() # Contenu du fichier
-                       chemin_fichier = contenu_fichier[0].replace("\n", "") # Chemin du fichier de lecture, en remplaçant le saut à la ligne par un caractère vide
-                       print("chemin du fichier :", chemin_fichier)
-                       print("fichier divisé en pair chemin/extension :", os.path.splitext(chemin_fichier))
-                       print("extension du fichier : ", os.path.splitext(chemin_fichier)[1])
+                       if len(contenu_fichier) > 0:
+                        chemin_fichier = contenu_fichier[0].replace("\n", "") # Chemin du fichier de lecture, en remplaçant le saut à la ligne par un caractère vide
+                       #print("chemin du fichier :", chemin_fichier)
+                       #print("fichier divisé en pair chemin/extension :", os.path.splitext(chemin_fichier))
+                       #print("extension du fichier : ", os.path.splitext(chemin_fichier)[1])
                              
                        if not chemin_fichier.endswith(".json"):  # Si le chemin du fichier n'a pas d'extension .json
                             chemin_fichier += ".json" # On ajoute l'extension au chemin du fichier
-                            print("chemin du fichier mis à jour :", chemin_fichier)
+                            #print("chemin du fichier mis à jour :", chemin_fichier)
                        
                        
                        titre_livre = os.path.basename(chemin_fichier) # On extrait le titre du livre depuis le chemin contenu dans le fichier texte
-                       print("titre du livre :", titre_livre)
-                       print("ID du fichier :", contenu_fichier[1]) # Afficher l'ID du fichier dans la console
+                       #print("titre du livre :", titre_livre)
+                       #print("ID du fichier :", contenu_fichier[1]) # Afficher l'ID du fichier dans la console
                        titre_fichier = fichier[7:] # Titre du livre comme il est contenu dans le fichier
                        titre_livre = titre_fichier
                        titre_livre = titre_livre.replace(".txt", "")
@@ -438,9 +439,10 @@ class Application(Tk):
                     editeur.destroy() # On détruit la fenêtre de l'éditeur
                     editeurs.remove(editeur)
 
-        for editeur in editeurs:
+        for editeur in editeurs: # Pour chaque éditeur ouvert
             if editeur.winfo_exists():
-                editeur.destroy()
+                editeur.destroy() # On détruit la fenêtre de l'éditeur
+                
         self.destroy() # Enfin, on détruit la fenêtre d'application principale            
 
 
