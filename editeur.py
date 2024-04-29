@@ -100,7 +100,9 @@ class Editeur(Tk):
         self.menu_edition.add_command(label="Annuler/Défaire Ctrl + Z", command=lambda:undo_redo.undo(self.champ_texte)) # L'utilisateur peut défaire la dernière action
         self.menu_edition.add_command(label="Refaire Ctrl + Y", command=lambda:undo_redo.redo(self.champ_texte)) # L'utilisateur peut refaire la dernière action
         self.menu_edition.add_command(label="Copier Ctrl + C", command=lambda:copier.copier(widget_texte=self.champ_texte)) # Commande pour copier du texte sélectionné 
+        self.menu_edition.add_command(label="Copier tout Ctrl + Shift + C", command=lambda:copier.copier(widget_texte=self.champ_texte, all=True))
         self.menu_edition.add_command(label="Couper Ctrl + X", command=lambda:copier.couper(widget_texte=self.champ_texte)) # Commande pour couper du texte sélectionné
+        self.menu_edition.add_command(label="Couper tout Ctrl + Shift + X", command=lambda:copier.couper(widget_texte=self.champ_texte, all=TRUE))
         self.menu_edition.add_command(label="Coller Ctrl+V", command=lambda:copier.coller(widget_texte=self.champ_texte)) # Commande pour coller un élément du presse-papiers
         self.barre_menus.add_cascade(label="Edition", menu=self.menu_edition)
 
@@ -118,6 +120,8 @@ class Editeur(Tk):
 
         self.bind("<Control-c>", lambda:copier.copier(widget_texte=self.champ_texte)) # L'utilisateur peut utiliser Ctrl + C pour copier du texte
 
+        self.bind("<Control-Shift-C>", lambda event:copier.copier(event, widget_texte=self.champ_texte, all=True)) # L'utilisateur peut copier tout le texte d'un coup avec Ctrl+Shift+C
+        self.bind("<Control-Shift-X>", lambda event:copier.couper(event, widget_texte=self.champ_texte, all=True)) # L'utilisateur peut couper tout le texte d'un coup avec Ctrl+Shift+X
         self.bind("<Control-x>", lambda:copier.couper(widget_texte=self.champ_texte)) # L'utilisateur peut utiliser Ctrl + X pour couper du texte
 
         self.bind("<Control-v>", lambda: copier.coller(widget_texte=self.champ_texte)) # L'utilisateur peut utiliser Ctrl + V pour coller du texte dans le champ de texte
