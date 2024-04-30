@@ -1,5 +1,10 @@
 # Script principal
 "C'est le script principal, qui gère le lancement de l'application"
+import check_required
+
+check_required.installer_modules() # Installer tous les modules nécessaires à l'application
+
+
 from tkinter import * # Importation de tkinter pour l'interface graphique
 from tkinter.ttk import Scrollbar
 from tkinter import messagebox
