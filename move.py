@@ -38,6 +38,7 @@ def move_file(old_file, new_location):
 
             update_path.update_file_path(fichier_texte_chemin, str(nouveau_chemin_complet) +"\n", id_fichier) # Mettre à jour le chemin de la lecture dans le fichier texte et écrire l'ID du fichier
 
+        
             
 
     except FileNotFoundError as error: # Si le fichier à déplacer n'existe pas

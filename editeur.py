@@ -73,8 +73,9 @@ class Editeur(Tk):
         if os.listdir("paths") != []: # Si le dossier paths n'est pas vide
             for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
                 f = open(f"paths/{fichier}", "r") # On veut lire le chemin contenu dans le fichier
-                contenu_fichier = f.read() # Lire le fichier texte ouvert pour obtenir le chemin conduisant vers un fichier JSON représentant une lecture
-                chemin_fichier_lecture = contenu_fichier + ".json"
+                contenu_fichier = f.readlines() # Lire le fichier texte ouvert pour obtenir le chemin conduisant vers un fichier JSON représentant une lecture
+                
+                chemin_fichier_lecture = contenu_fichier[0] + ".json"
                 print(chemin_fichier_lecture)
                 if os.path.exists(chemin_fichier_lecture): # Si le chemin contenu par le fichier existe
                     print(f"{chemin_fichier_lecture} existe")
@@ -150,6 +151,21 @@ class Editeur(Tk):
         self.champ_texte.tag_add("test", 1.0)
 
         #self.champ_texte.tag_config("test", background="black")
+
+
+    def saut_ligne(self):
+        "Faire un saut à la ligne dans le widget texte"
+        current_index = self.champ_texte.index(INSERT)  # Obtenir la position actuelle du curseur dans le champs de texte
+        current_line, current_column = map(int, str(current_index).split("."))
+
+
+        next_line_number = current_line + 1 # Position de la ligne suivante, sous forme de nombre entier
+        next_line_index = f"{next_line_number}.0" # Index de la ligne à laquelle il faudra placer le curseur
+
+        # Placer le curseur à la prochaine ligne
+        self.champ_texte.mark_set(INSERT, next_line_index)
+        self.champ_texte.see(INSERT) # Scroller le widget texte de manière à rendre le curseur visible
+
     def ouvrir_fichier(self,event, dialogue=True, nom_fichier=""):
         "Ouvrir un fichier JSON représentant une lecture"
         if dialogue == True: # Si on doit afficher une boîte de dialogue pour demander à l'utilisateur de choisir un fichier à ouvrir
@@ -164,7 +180,10 @@ class Editeur(Tk):
                     donnees_formatees = json.dumps(donnees, indent=4, ensure_ascii=False) # Données du fichier JSON formattées sous forme de chaîne de caractères normale
                     donnees_affichees = "\n".join(f"{key}:{value}" for key, value in donnees.items()) # Données formatées telles qu'elles sont affichées dans le champ de texte
                     
-        
+                    for key, value in donnees.items(): # Pour chaque clé et valeur du dictionnaire qui représente les données JSON
+                        if value.endswith("\n"):  # Si la valeur, qui est une chaîne de caractères, se termine par un saut à la ligne
+                            self.saut_ligne() # Faire un saut à la ligne dans le champ de texte
+
                     self.champ_texte.insert(END, donnees_affichees)
 
                   
@@ -329,11 +348,27 @@ class Editeur(Tk):
     
             version_travail = self.toJSON(self.champ_texte.get(1.0, END))[1] # Version en cours de travail du fichier
 
+            for cle in version_enregistree: # Pour chaque clé de la version enregistrée du fichier
+                if cle in version_travail: # Si la clé est présente dans la version de travail
+                    valeur = version_travail[cle] # Valeur de la clé
+                    if valeur == version_enregistree[cle].replace("\n", "") and version_enregistree[cle].endswith("\n"): # Si la valeur ne se termine pas par un \n
+                        
+                        if not valeur.endswith("\n"): # Si la valeur ne se termine pas par un \n
+                            valeur = version_enregistree[cle] # Mettre à jour la version de travail pour qu'elle contienne un \n 
+
+                            version_travail[cle] = valeur
+
+
+
+                
+
             version_enregistree_json = json.dumps(version_enregistree, sort_keys=True)
+
             version_travail_json = json.dumps(version_travail, sort_keys=True)
+
             
-            #print("Version enregistrée (json) :", version_enregistree_json)
-            #print("Version de travail (json) :", version_travail_json)
+            print("Version enregistrée (json) :", version_enregistree_json)
+            print("Version de travail (json) :", version_travail_json)
             return version_travail_json != version_enregistree_json
         
         else: # Si l'utilisateur travaille sur un nouveau fichier
@@ -349,6 +384,27 @@ class Editeur(Tk):
         try:
 
             donnees = self.toJSON(self.champ_texte.get(1.0, END))[1] # On formate les données contenues dans le champ de texte au format JSON
+            for cle, valeur in donnees.items(): # Pour chaque clé et valeur des données JSON
+                print("Clé à engregister :", cle)
+                print("Valeur de la clé :", valeur)
+
+                lignes = self.champ_texte.get(1.0, END).split("\n") # Toutes les lignes du champs de texte
+                if len(lignes) > 0: # S'il y a des lignes dans le texte
+                    for ligne in lignes: # Pour chaque ligne du champ de texte
+                        print("Ligne dans le champs de texte:", ligne)
+                    
+                        if ligne =="": # Si la ligne est vide
+                            print("La ligne est vide")
+                            pos_ligne_precedente = lignes.index(ligne) -1 # Position de la ligne précédente
+                            ligne_precedente = lignes[pos_ligne_precedente] # Ligne précédente
+                            print("Ligne précédente:", ligne_precedente)
+                            
+                            if cle == ligne_precedente.split(":")[0] and valeur == ligne_precedente.split(":")[1]: # Si la clé et la valeur sont dans la ligne précédente
+                                if not valeur.endswith("\n"): # Si la valeur ne contient pas un saut à la ligne
+                                    valeur += "\n" # On indique dans la valeur qu'il va falloir sauter à la ligne
+                                    donnees[cle] = valeur # On met à jour le dictionnaire
+
+
             localisation_fichier = filedialog.asksaveasfilename(title="Où souhaitez-vous enregistrer le fichier ?", filetypes=[("Base de données JSON", "*.json")], defaultextension=".json")  # Demander à l'utilisateur où il souhaite enregistrer le fichier
             if localisation_fichier != "": # Si l'utilisateur n'a pas cliqué sur Annuler
                 self.fichier_ouvert = localisation_fichier
@@ -393,6 +449,31 @@ class Editeur(Tk):
                     f.close() # On ferme le fichier
 
             donnees_travail = self.toJSON(self.champ_texte.get(1.0, END))[1] # Version en cours de travail du fichier
+
+            print("Données de travail :", donnees_travail)
+            
+            print("Items des données de travail:", donnees_travail.items())
+            for cle in donnees_travail: # Pour chaque clé et valeur des données JSON
+                print("Clé à enregister :", cle)
+
+                valeur = donnees_travail[cle] # Valeur pour chaque clé
+
+                lignes = self.champ_texte.get(1.0, END).split("\n") # Toutes les lignes du champ de texte
+                print("Toutes les lignes dans le champs de texte :", lignes)
+
+                if len(lignes) > 0: # S'il y a des lignes dans le texte
+                    for ligne in lignes: # Pour chaque ligne du champ de texte
+                        print("Ligne du champs de texte :", ligne)
+
+                        if ligne == "": # Si la ligne est vide
+                            pos_ligne_precedente = lignes.index(ligne) - 1 # Index de la ligne précédente
+                            ligne_precedente = lignes[pos_ligne_precedente]
+                            print("Ligne précédente :", ligne_precedente)
+                            if cle == ligne_precedente.split(":")[0] and valeur == ligne_precedente.split(":")[1]: # Si la clé et la valeur sont dans la ligne précédente
+                                if not valeur.endswith("\n"): # Si la valeur ne contient pas un saut à la ligne
+                                    valeur += "\n"
+                                    donnees_travail[cle] = valeur # Mettre à jour les données de travail
+
 
             self.donnees_enregistrees= dict(donnees_travail) # On met à jour les données enregistrées sur la version en cours de travail
 
