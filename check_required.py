@@ -7,8 +7,9 @@ modules_requis = ["newspaper3k", "tkinter", "json", "shutil", "pathlib", "langde
 def installer_modules():
     "Installer les modules requis"
     print("Vérification de l'installation des prérequis...")
-
     for module in modules_requis: # Pour chaque module requis
+
+    
         if pkgutil.find_loader(module) is None: # Si le module n'est pas installé
             
             print(f"Installation des prérequis: {module}...")
@@ -22,7 +23,7 @@ def installer_modules():
                 print(f"Une erreur s'est produite durant l'installation. L'installation de {module} a été ignorée")
                 continue # Tenter d'installer les autres modules nécessaires    
         
-        else:
-            print(f"{module} est déjà installé")
+        #else:
+        #    print(f"{module} est déjà installé")
 
 

@@ -10,6 +10,7 @@ import os
 import editorfuncs.copier_coller as copier # On importe le script copier_coller du dossier editorfuncs pour pouvoir copier des éléments
 import editorfuncs.remplacer as remplacer # On importe le script remplacer pour remplacer du texte
 import undo_redo
+import lignes_vides
 
 
 editeurs = [] # Liste des éditeurs ouverts
@@ -24,6 +25,7 @@ def chemin_ressource(chemin):
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, chemin)     
+
 
 class Editeur(Tk):
     "Classe représentant l'éditeur de lecture"
@@ -74,12 +76,14 @@ class Editeur(Tk):
             for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
                 f = open(f"paths/{fichier}", "r") # On veut lire le chemin contenu dans le fichier
                 contenu_fichier = f.readlines() # Lire le fichier texte ouvert pour obtenir le chemin conduisant vers un fichier JSON représentant une lecture
-                
-                chemin_fichier_lecture = contenu_fichier[0] + ".json"
-                print(chemin_fichier_lecture)
-                if os.path.exists(chemin_fichier_lecture): # Si le chemin contenu par le fichier existe
-                    print(f"{chemin_fichier_lecture} existe")
-                    self.menu_lectures_recentes.add_command(label=chemin_fichier_lecture, command=lambda chemin_fichier=chemin_fichier_lecture:Editeur(application_maitre).ouvrir_fichier(event=None,dialogue=False, nom_fichier=chemin_fichier))  # On ajoute un bouton pour ouvrir le fichier JSON correspondant dans un nouvel éditeur
+                if not contenu_fichier[0].endswith(".json"):
+                    chemin_fichier_lecture_encode = (contenu_fichier[0] + ".json").encode("utf-8")
+                    chemin_fichier_lecture = chemin_fichier_lecture_encode.decode("utf-8")
+                    #print(chemin_fichier_lecture)
+                    if os.path.exists(chemin_fichier_lecture): # Si le chemin contenu par le fichier existe
+
+                        #print(f"{chemin_fichier_lecture} existe")
+                        self.menu_lectures_recentes.add_command(label=chemin_fichier_lecture, command=lambda chemin_fichier=chemin_fichier_lecture:Editeur(application_maitre).ouvrir_fichier(event=None,dialogue=False, nom_fichier=chemin_fichier))  # On ajoute un bouton pour ouvrir le fichier JSON correspondant dans un nouvel éditeur
                 else:
                     print(f"{chemin_fichier_lecture} n'existe pas")
         self.menu_fichier.add_cascade(label="Lectures récentes", menu=self.menu_lectures_recentes) 
@@ -173,7 +177,10 @@ class Editeur(Tk):
             self.fichier_ouvert = nom_fichier
             if nom_fichier:
                 with open(nom_fichier, "r") as f: # On ouvre le fichier JSON en lecture
-                    donnees = json.load(f) # Charger le fichier JSON en mémoire
+                    try: # Tenter de lire le fichier
+                        donnees = json.load(f) # Charger le fichier JSON en mémoire
+                    except: # En cas d'erreur
+                        donnees = {} # Initialiser les données comme un dictionnaire vide
                     #print(donnees)
                     f.close() # On ferme le fichier JSON
 
@@ -236,7 +243,7 @@ class Editeur(Tk):
         "Changer le titre de la fenêtre si une modification non enregistrée a été faite"
 
         if self.comparer_versions():   
-                print("Il y a eu des modifications")
+                #print("Il y a eu des modifications")
                 if self.fichier_existant:
                     self.title(f"*{os.path.basename(self.fichier_ouvert)} - Editeur de lecture")
 
@@ -261,7 +268,7 @@ class Editeur(Tk):
 
 
     def toJSON(self, donnees):
-        "Convertir des données dans un format JSON"
+        "Convertir les données  du champ de texte telles que l'utilisateur les voit dans un format de style JSON"
         lignes = donnees.split("\n") # Séparer les données par des lignes
         #print("Lignes :", lignes)
        
@@ -342,7 +349,10 @@ class Editeur(Tk):
         if self.fichier_existant and self.fichier_ouvert != "":
            # print("Le fichier existe et est ", self.fichier_ouvert)
             with open(self.fichier_ouvert, encoding="utf-8",  mode="r") as f: # On ouvre le fichier JSON en lecture
-                version_enregistree = json.load(f) # Version enregistrée du fichier 
+                try: # Tenter d'obtenir le contenu de la version enregistrée du fichier
+                    version_enregistree = json.load(f) # Version enregistrée du fichier
+                except: # En cas d'erreur
+                    version_enregistree = {} # Initialiser le contenu du fichier enregistré comme un dictionnaire vide     
                 f.close()
 
     
@@ -367,8 +377,8 @@ class Editeur(Tk):
             version_travail_json = json.dumps(version_travail, sort_keys=True)
 
             
-            print("Version enregistrée (json) :", version_enregistree_json)
-            print("Version de travail (json) :", version_travail_json)
+           # print("Version enregistrée (json) :", version_enregistree_json)
+           # print("Version de travail (json) :", version_travail_json)
             return version_travail_json != version_enregistree_json
         
         else: # Si l'utilisateur travaille sur un nouveau fichier
@@ -385,25 +395,26 @@ class Editeur(Tk):
 
             donnees = self.toJSON(self.champ_texte.get(1.0, END))[1] # On formate les données contenues dans le champ de texte au format JSON
             for cle, valeur in donnees.items(): # Pour chaque clé et valeur des données JSON
-                print("Clé à engregister :", cle)
-                print("Valeur de la clé :", valeur)
+                #print("Clé à engregister :", cle)
+                #print("Valeur de la clé :", valeur)
 
                 lignes = self.champ_texte.get(1.0, END).split("\n") # Toutes les lignes du champs de texte
-                if len(lignes) > 0: # S'il y a des lignes dans le texte
-                    for ligne in lignes: # Pour chaque ligne du champ de texte
-                        print("Ligne dans le champs de texte:", ligne)
-                    
-                        if ligne =="": # Si la ligne est vide
-                            print("La ligne est vide")
-                            pos_ligne_precedente = lignes.index(ligne) -1 # Position de la ligne précédente
-                            ligne_precedente = lignes[pos_ligne_precedente] # Ligne précédente
-                            print("Ligne précédente:", ligne_precedente)
-                            
-                            if cle == ligne_precedente.split(":")[0] and valeur == ligne_precedente.split(":")[1]: # Si la clé et la valeur sont dans la ligne précédente
-                                if not valeur.endswith("\n"): # Si la valeur ne contient pas un saut à la ligne
-                                    valeur += "\n" # On indique dans la valeur qu'il va falloir sauter à la ligne
-                                    donnees[cle] = valeur # On met à jour le dictionnaire
+                for i, ligne in enumerate(lignes):
+                    dict_ligne_vides = lignes_vides.lignes_vides("\n".join(lignes), i) # Compter toutes les lignes vides après la première ligne du texte
+                    if dict_ligne_vides != {} and ligne.strip() != "":   
+                        lignes_vides_apres = dict_ligne_vides[ligne] # Nombre de lignes vides après la ligne actuelle
+                        #print("Ligne dans le dictionnaire des lignes vides :", ligne)
+                        
+                        print(f"Nombre de lignes vides après la ligne {ligne} : {lignes_vides_apres}")
+                        if lignes_vides_apres > 0:
+                            valeur += "\n"*lignes_vides_apres  # Rajouter autant de sauts à la ligne qu'il n'y a de lignes vides après la ligne actuelle
+                
+                
+                
 
+
+                donnees[cle] = valeur
+                
 
             localisation_fichier = filedialog.asksaveasfilename(title="Où souhaitez-vous enregistrer le fichier ?", filetypes=[("Base de données JSON", "*.json")], defaultextension=".json")  # Demander à l'utilisateur où il souhaite enregistrer le fichier
             if localisation_fichier != "": # Si l'utilisateur n'a pas cliqué sur Annuler
@@ -434,48 +445,75 @@ class Editeur(Tk):
     def enregistrer(self, event=None):
         "Enregistrer les modifications faites à un fichier JSON"
         if not self.fichier_existant or self.fichier_ouvert == "": # Si l'utilisateur n'a pas enregistré les données dans un fichier ou que le fichier n'est pas ouvert
-            if not self.fichier_existant: # Si le fichier n'existe pas
-                print("Les données n'ont pas été enregistrées sous forme de fichier")
+            """if not self.fichier_existant: # Si le fichier n'existe pas
+                #print("Les données n'ont pas été enregistrées sous forme de fichier")
 
             if self.fichier_ouvert == "": # Si l'utilisateur n'a ouvert aucun fichier
-                print("Aucun fichier n'a été ouvert")  
+                print("Aucun fichier n'a été ouvert")  """
+            
             if not self.file_saved: # Si les données n'ont pas été enregistrées dans un fichier
                 self.enregistrer_sous()
 
         else:
             if self.comparer_versions(): # Si des modifications ont été faites au fichier
                 with open(self.fichier_ouvert,encoding="utf-8", mode= "r") as f: # On ouvre le fichier JSON en lecture 
-                    self.donnees_enregistrees = json.load(f) # On charge les données enregistrées
+                    try:
+                        self.donnees_enregistrees = json.load(f) # On charge les données enregistrées
+                    except:
+                        self.donnees_enregistrees = {}  
                     f.close() # On ferme le fichier
 
-            donnees_travail = self.toJSON(self.champ_texte.get(1.0, END))[1] # Version en cours de travail du fichier
+            donnees_travail = self.toJSON(self.champ_texte.get(1.0, END).strip())[1] # Version en cours de travail du fichier
 
-            print("Données de travail :", donnees_travail)
+            #print("Données de travail :", donnees_travail)
+
+            lignes = self.champ_texte.get(1.0, END).strip().split("\n") # Toutes les lignes du champ de texte
             
-            print("Items des données de travail:", donnees_travail.items())
-            for cle in donnees_travail: # Pour chaque clé et valeur des données JSON
-                print("Clé à enregister :", cle)
+            #print("Items des données de travail:", donnees_travail.items())
+            for i,ligne in enumerate(lignes):
+                #print("Clé à enregister :", cle)
 
-                valeur = donnees_travail[cle] # Valeur pour chaque clé
-
-                lignes = self.champ_texte.get(1.0, END).split("\n") # Toutes les lignes du champ de texte
-                print("Toutes les lignes dans le champs de texte :", lignes)
-
-                if len(lignes) > 0: # S'il y a des lignes dans le texte
-                    for ligne in lignes: # Pour chaque ligne du champ de texte
-                        print("Ligne du champs de texte :", ligne)
-
-                        if ligne == "": # Si la ligne est vide
-                            pos_ligne_precedente = lignes.index(ligne) - 1 # Index de la ligne précédente
-                            ligne_precedente = lignes[pos_ligne_precedente]
-                            print("Ligne précédente :", ligne_precedente)
-                            if cle == ligne_precedente.split(":")[0] and valeur == ligne_precedente.split(":")[1]: # Si la clé et la valeur sont dans la ligne précédente
-                                if not valeur.endswith("\n"): # Si la valeur ne contient pas un saut à la ligne
-                                    valeur += "\n"
-                                    donnees_travail[cle] = valeur # Mettre à jour les données de travail
+                cle = ligne.split(":")[0] if ligne.strip() else "" # Clé contenue dans la ligne, déterminnée par sa situation par rapport au ":"
+                  
 
 
-            self.donnees_enregistrees= dict(donnees_travail) # On met à jour les données enregistrées sur la version en cours de travail
+                valeur = donnees_travail[cle] if cle.strip() else ""# Valeur pour chaque clé
+
+                
+                valeur = valeur.replace("\n", "") # Enlever tous les sauts à la ligne
+
+                
+                    
+                dict_ligne_vides = lignes_vides.lignes_vides("\n".join(lignes), i) # Compter toutes les lignes vides après la première ligne du texte
+                print("Dictionnaire des lignes vides:",dict_ligne_vides)
+                if dict_ligne_vides != {} and ligne.strip() != "":   
+                    lignes_vides_apres = dict_ligne_vides[ligne] # Nombre de lignes vides après la ligne actuelle
+                        #print("Ligne dans le dictionnaire des lignes vides :", ligne)
+                        
+                    print(f"Nombre de lignes vides après la ligne {ligne} : {lignes_vides_apres}")
+                    if lignes_vides_apres > 0:
+                        valeur += "\n"*lignes_vides_apres  # Rajouter autant de sauts à la ligne qu'il n'y a de lignes vides après la ligne actuelle
+                
+                
+                
+                donnees_travail[cle] = valeur # Mettre à jour les données de travail pour inclure les potentiels sauts à la ligne 
+                            
+                            #valeur += "\n"*lignes_vides_apres # Ajouter autant de sauts à la ligne qu'il n'y a de lignes vides après l'actuelle
+
+                        #else:
+                        #    continue        
+                                
+                       
+                            
+                
+                """else:    
+                    donnees_travail = {}"""
+                
+
+            if donnees_travail.get("", "") == "" and "" in donnees_travail.keys():
+                del donnees_travail[""]    
+
+            self.donnees_enregistrees= donnees_travail # On met à jour les données enregistrées sur la version en cours de travail
 
             with open(self.fichier_ouvert, "w", encoding="utf-8") as f: # On ouvre le fichier JSON en écriture
                 json.dump(self.donnees_enregistrees, f, indent=4)

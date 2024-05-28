@@ -2,7 +2,10 @@
 "C'est le script principal, qui gère le lancement de l'application"
 import check_required
 
-check_required.installer_modules() # Installer tous les modules nécessaires à l'application
+
+
+
+check_required.installer_modules() # Installer les modules manquants
 
 
 from tkinter import * # Importation de tkinter pour l'interface graphique
@@ -60,7 +63,7 @@ class Application(Tk):
         self.menu_lecture.add_command(label="Déplacer une lecture vers les favoris...", command=lambda:self.deplacer_lecture_favoris(dialogue=True)) # Commande pour déplacer une lecture vers les favoris
         self.menu_lecture.add_command(label="Quitter l'application... Ctrl + Q", command=self.quitter)
         
-
+       
         self.barre_menus.add_cascade(label="Lecture", menu=self.menu_lecture) # On insère le menu lecture dans la barre de menus
 
 
@@ -151,7 +154,7 @@ class Application(Tk):
                 self.lectures_enregistrees.pack(fill="both")
                 self.lectures.pack(fill="both")
                 for fichier in os.listdir("paths"): # Pour chaque fichier du dossier paths
-                    print(fichier)
+                    #print(fichier)
                     if fichier.startswith("chemin_"): # Si le nom du fichier commence par "chemin_"
                        f = open(f"paths/{fichier}", "r") # On veut lire le contenu du fichier
                        contenu_fichier = f.readlines() # Contenu du fichier
@@ -183,14 +186,14 @@ class Application(Tk):
                        #print(chemin_fichier)                 
                            
                        if os.path.exists(chemin_fichier): # Si le chemin contenu dans le fichier existe
-                            print(f"{chemin_fichier} existe")
+                            #print(f"{chemin_fichier} existe")
                             for titre in self.titres: # Pour chaque titre enregistré 
                                 if titre not in self.lectures.get(0, END): # Si le titre n' a pas déjà été inséré
                                     self.lectures.insert(END, titre)
 
-                       else:
-                           print("chemin :", chemin_fichier)
-                           print(f"{chemin_fichier} n'existe pas")     
+                       #else:
+                           #print("chemin :", chemin_fichier)
+                           #print(f"{chemin_fichier} n'existe pas")     
                        f.close() # On ferme le fichier texte    """
                 
                 self.lectures.pack(fill="both", expand=True)
@@ -418,37 +421,39 @@ class Application(Tk):
         n_editeurs_non_sauv = len(editeurs_non_sauv) # Total des éditeurs aux modifications non sauvegardées
         for editeur in editeurs: # Pour chaque éditeur ouverts 
             if editeur.winfo_exists():
-                if not editeur.modifications_sauvegardees(): # Si les modifications apportées dans l'éditeur n'ont pas été enregistrées
-                    editeurs_non_sauv.append(editeur) # On ajoute l'éditeur à la liste des éditeurs non enregistrés
-                    n_editeurs_non_sauv = len(editeurs_non_sauv) # On met à jour le nombre d'éditeurs non sauvegardés
+                    if not editeur.modifications_sauvegardees(): # Si les modifications apportées dans l'éditeur n'ont pas été enregistrées
+                        editeurs_non_sauv.append(editeur) # On ajoute l'éditeur à la liste des éditeurs non enregistrés
+                        n_editeurs_non_sauv = len(editeurs_non_sauv) # On met à jour le nombre d'éditeurs non sauvegardés
 
         if n_editeurs_non_sauv > 0: # S'il y a des éditeurs non sauvegardés
-            enregistrer = messagebox.askyesnocancel("Sauvegarder les modifications ?", f"Il y a {n_editeurs_non_sauv} éditeurs dans lesquel des modifications n'ont pas été enregistrées. Souhaitez-vous enregistrer ces modifications avant de quitter ?") # Demander à l'utilisateur s'il souhaite enregistrer les modifications apportées dans chaque éditeur
-            if enregistrer == None: # Si l'utilisateur a cliqué sur Annnuler
-                annuler = True
-                return 
+                enregistrer = messagebox.askyesnocancel("Sauvegarder les modifications ?", f"Il y a {n_editeurs_non_sauv} éditeurs dans lesquel des modifications n'ont pas été enregistrées. Souhaitez-vous enregistrer ces modifications avant de quitter ? \n \n Si vous avez changé(e) d'avis ou que vous avez enclenché la procédure de fermeture par erreur, cliquez sur 'Annuler' pour revenir en arrière. Les modifications non enregistrées ni les éditeurs ouverts ne seront perdus.") # Demander à l'utilisateur s'il souhaite enregistrer les modifications apportées dans chaque éditeur
+                if enregistrer == None: # Si l'utilisateur a cliqué sur Annnuler
+                    annuler = True
+                    return 
             
-            if enregistrer == True: # Si l'utilisateur veut enregistrer les modifications
-                for editeur in editeurs: # Pour chaque éditeur ouvert
-                    if editeur.winfo_exists():
+                if enregistrer == True: # Si l'utilisateur veut enregistrer les modifications
+                    for editeur in editeurs: # Pour chaque éditeur ouvert
+                        if editeur.winfo_exists():
                             editeur.enregistrer() # Enregistrer les modifications
                             editeurs_non_sauv.remove(editeur)
 
                        
 
-            if enregistrer == False: # Si l'utilisateur ne veut pas enregistrer les modifications
-                for editeur in editeurs: # Pour chaque éditeur ouvert
-                    if editeur in editeurs_non_sauv: # Si l'éditeur contient des modifications non sauvegardées
-                        editeurs_non_sauv.remove(editeur)
+                if enregistrer == False: # Si l'utilisateur ne veut pas enregistrer les modifications
+                    for editeur in editeurs: # Pour chaque éditeur ouvert
+                        if editeur in editeurs_non_sauv: # Si l'éditeur contient des modifications non sauvegardées
+                            editeurs_non_sauv.remove(editeur)
 
-                    editeur.destroy() # On détruit la fenêtre de l'éditeur
-                    editeurs.remove(editeur)
+                        editeur.destroy() # On détruit la fenêtre de l'éditeur
+                        editeurs.remove(editeur)
 
         for editeur in editeurs: # Pour chaque éditeur ouvert
-            if editeur.winfo_exists():
-                editeur.destroy() # On détruit la fenêtre de l'éditeur
+                if editeur.winfo_exists():
+                    editeur.destroy() # On détruit la fenêtre de l'éditeur
                 
-        self.destroy() # Enfin, on détruit la fenêtre d'application principale            
+        self.destroy() # Enfin, on détruit la fenêtre d'application principale 
+
+                        
 
 
 

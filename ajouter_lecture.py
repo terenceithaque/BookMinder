@@ -140,7 +140,7 @@ class FenetreAjouter(Toplevel):
 
 
     def supprimer_caracteres_speciaux(self):
-        "Supprimer les caractères spéciaux contenus dans le titre" 
+        "Supprimer les caractères spéciaux contenus dans le titre afin d'obtenir un nom de fichier valide pour le système d'exploitation de l'utilisateur" 
         titre = self.titre_livre.get() # Titre du livre
         if platform.system() == "Windows": # Si le système d'exploitation de l'utilisateur est un Windows
             print("Le système est Windows")

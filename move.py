@@ -4,6 +4,8 @@ import os
 import json
 import update_path # Importer le module update_path pour mettre à jour le chemin d'un fichier
 from pathlib import Path
+from tkinter import messagebox
+import file_id
 
 
 def move_file(old_file, new_location):
@@ -26,17 +28,28 @@ def move_file(old_file, new_location):
         with open(nouveau_chemin_complet, "r") as f: # Ouvrir le fichier en lecture
             data = json.load(f) # Charger les données JSON du fichier
             f.close()
-
-            titre_lecture = data["titre"] # Extraire le titre de la lecture
-            fichier_texte_chemin = Path(os.path.abspath(f"paths/chemin_{titre_lecture}.txt")) # Fichier texte qui contient le chemin vers la lecture
             
-            f = open(fichier_texte_chemin, "r") # Ouvrir le fichier texte en lecture
-            contenu_fichier_texte = f.readlines() # Lire le contenu du fichier texte
-            id_fichier = contenu_fichier_texte[1] if len(contenu_fichier_texte) > 1 else "" # Mettre à jour l'ID du fichier.
+            try: # Tenter d'extraire le titre de la lecture via la clé titre
+                titre_lecture = data["titre"] # Extraire le titre de la lecture
+                fichier_texte_chemin = Path(os.path.abspath(f"paths/chemin_{titre_lecture}.txt")) # Fichier texte qui contient le chemin vers la lecture
+            
+                f = open(fichier_texte_chemin, "r") # Ouvrir le fichier texte en lecture
+                contenu_fichier_texte = f.readlines() # Lire le contenu du fichier texte
+                id_fichier = contenu_fichier_texte[1] if len(contenu_fichier_texte) > 1 else "" # Mettre à jour l'ID du fichier.
+            
+                f.close() # Fermer le fichier
 
-            f.close() # Fermer le fichier
+                update_path.update_file_path(fichier_texte_chemin, str(nouveau_chemin_complet) +"\n", id_fichier) # Mettre à jour le chemin de la lecture dans le fichier texte et écrire l'ID du fichier
 
-            update_path.update_file_path(fichier_texte_chemin, str(nouveau_chemin_complet) +"\n", id_fichier) # Mettre à jour le chemin de la lecture dans le fichier texte et écrire l'ID du fichier
+            except KeyError: # En cas d'erreur avec la clé titre
+                titre_lecture = list(data)[0] # On prend la première clé comme titre
+                fichier_texte_chemin = Path(os.path.abspath(f"paths/chemin_{titre_lecture}.txt")) # Chemin du futur fichier texte à créer
+
+                f = open(fichier_texte_chemin, "w") # Ouvrir le fichier texte en écriture
+                f.write(str(nouveau_chemin_complet) + "\n") # Ecrire le chemin de la lecture dans le fichier
+                f.write(file_id.generer_id()) # Générer et écrire un nouvel ID
+                f.close()
+
 
         
             
