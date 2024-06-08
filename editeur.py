@@ -11,6 +11,8 @@ import editorfuncs.copier_coller as copier # On importe le script copier_coller 
 import editorfuncs.remplacer as remplacer # On importe le script remplacer pour remplacer du texte
 import undo_redo
 import lignes_vides
+import settings
+import auto_save
 
 
 editeurs = [] # Liste des éditeurs ouverts
@@ -33,6 +35,9 @@ class Editeur(Tk):
         "Constructeur de l'éditeur"
         super().__init__() # On hérite des propriétés de la classe Tk
 
+        self.settings = settings.read_settings() # Obtenir les paramètres de l'application
+
+        
 
         editeurs.append(self) # On ajoute le nouvel éditeur à la liste des éditeurs ouverts
 
@@ -40,13 +45,25 @@ class Editeur(Tk):
         self.app_maitre = application_maitre # Application maître
 
         
+        self.bouton_fichier_ouvert = Button(self, text="Ouvrir un fichier existant", command=lambda:self.ouvrir_fichier(dialogue=True)) # Bouton qui affiche le fichier actuellement ouvert et permet d'en ouvrir un autre d'un seul clic
+        self.bouton_fichier_ouvert.pack(fill="x") # Le bouton prend toute la longueur disponible sur l'écran
+        
 
         self.text_scrollbar = textscroll(self) # Barre de défilement verticale pour le texte
 
+        
         self.champ_texte = Text(self, yscrollcommand=self.text_scrollbar.set, undo=True) # Champ de texte dans lequel sont affichées les données d'un fichier JSON ouvert
         self.text_scrollbar.config(command=self.champ_texte.yview)
         self.text_scrollbar.pack(side=RIGHT, fill=Y)
         self.champ_texte.pack(fill="both", expand=True)
+
+
+        if auto_save.check_auto_save_enabled():
+            self.champ_texte.bind("<KeyRelease>", self.enregistrer)
+            
+
+
+
 
         self.title("Editeur de lecture")
 
@@ -54,13 +71,17 @@ class Editeur(Tk):
 
         self.iconbitmap(self.chemin_icone) # Icône de la fenêtre
 
+        self.menu_frame = Frame(self)  # Frame contenant la barre de menus
 
-        self.barre_menus = Menu(self, tearoff=0) # Barre de menus de l'éditeur
+        self.menu_frame.pack(fill=X)
+        self.barre_menus = Menu(self.menu_frame, tearoff=0) # Barre de menus de l'éditeur
 
 
         self.file_saved = False # Savoir si les données ont été enregistrées dans un fichier
 
         self.menu_fichier = Menu(self, tearoff=0) # Menu "Fichier"
+
+        
 
         self.fichier_ouvert = "" # Fichier ouvert dans l'éditeur
 
@@ -90,6 +111,32 @@ class Editeur(Tk):
 
         self.menu_fichier.add_command(label="Enregistrer Ctrl + S", command=lambda:self.enregistrer(event=None))
 
+
+        self.menu_fichier.add_command(label="Config. enregistrement automatique", command=lambda:auto_save.AutoSaveWindow(self, self.champ_texte, self.enregistrer)) # Commande qui affiche une fenêtre pour configurer l'enregistrement automatique
+        
+
+        
+        
+
+        #self.auto_save = self.enable_disable_auto_save(startup=True)
+
+                      
+
+        #self.auto_save_button = Checkbutton(self.menu_fichier,variable=self.auto_save, command=self.enable_disable_auto_save) # Bouton pour enregistrer les modifications au fur et à mesure que l'utilisateur saisit des choses au clavier
+
+
+        
+        #self.auto_save_button.pack()
+
+    
+
+            
+       
+        #self.enable_disable_auto_save(startup=True)
+        
+
+
+        
         self.menu_fichier.add_command(label="Enregistrer sous...", command=self.enregistrer_sous)   
 
 
@@ -154,8 +201,10 @@ class Editeur(Tk):
 
         self.champ_texte.tag_add("test", 1.0)
 
-        #self.champ_texte.tag_config("test", background="black")
 
+        
+
+        #self.champ_texte.tag_config("test", background="black")
 
     def saut_ligne(self):
         "Faire un saut à la ligne dans le widget texte"
@@ -170,7 +219,27 @@ class Editeur(Tk):
         self.champ_texte.mark_set(INSERT, next_line_index)
         self.champ_texte.see(INSERT) # Scroller le widget texte de manière à rendre le curseur visible
 
-    def ouvrir_fichier(self,event, dialogue=True, nom_fichier=""):
+        
+
+
+
+    
+
+             
+
+
+    
+
+
+    
+                                             
+
+
+
+
+         
+
+    def ouvrir_fichier(self,event=None, dialogue=True, nom_fichier=""):
         "Ouvrir un fichier JSON représentant une lecture"
         if dialogue == True: # Si on doit afficher une boîte de dialogue pour demander à l'utilisateur de choisir un fichier à ouvrir
             nom_fichier = filedialog.askopenfilename(title="Sélectionnez un fichier JSON représentant une lecture :", filetypes=[("Base de données JSON", "*.json")]) # On demande à l'utilisateur de sélectionner le fichier à ouvrir
@@ -191,7 +260,10 @@ class Editeur(Tk):
                         if value.endswith("\n"):  # Si la valeur, qui est une chaîne de caractères, se termine par un saut à la ligne
                             self.saut_ligne() # Faire un saut à la ligne dans le champ de texte
 
+                    self.champ_texte.delete(1.0, END) # Supprimer tout le texte contenu dans le champ de texte
                     self.champ_texte.insert(END, donnees_affichees)
+
+            self.bouton_fichier_ouvert.config(text=nom_fichier)  # Mettre à jour le bouton affichant le fichier ouvert       
 
                   
 
@@ -211,12 +283,15 @@ class Editeur(Tk):
                         donnees_formatees = json.dumps(donnees, indent=4, ensure_ascii=False)   # Données du fichier JSON formattées sous forme de chaîne de caractères normale
                         donnees_affichees = "\n".join(f"{key}:{value}" for key, value in donnees.items()) # Données formatées telles qu'elles sont affichées dans le champ de texte
                         #print("Données en JSON :", self.toJSON(donnees_affichees))
+                        self.champ_texte.delete(1.0, END) # Supprimer tout le texte contenu dans le champ de texte
                         self.champ_texte.insert(END, donnees_affichees)
 
                         #donnees_formatees = donnees_formatees.decode("utf-8") # On décode les données formattées en utf-8
 
                        # print("Données formattées en utf-8 :", donnees_formatees) 
                         #self.after(0, self.champ_texte.insert, END, donnees_formatees)
+
+                    self.bouton_fichier_ouvert.config(text=nom_fichier)  # Mettre à jour le bouton affichant le fichier ouvert     
 
 
             except FileNotFoundError:    # Si le fichier JSON n'existe pas
@@ -433,6 +508,8 @@ class Editeur(Tk):
                     self.title(f"{os.path.basename(self.fichier_ouvert)}")
 
                     self.file_saved = True # Les données ont été enregistrées dans un fichier
+
+                self.bouton_fichier_ouvert.config(text=self.fichier_ouvert)    
             
             
 

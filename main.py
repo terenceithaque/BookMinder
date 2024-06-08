@@ -163,7 +163,7 @@ class Application(Tk):
                        #print("chemin du fichier :", chemin_fichier)
                        #print("fichier divisé en pair chemin/extension :", os.path.splitext(chemin_fichier))
                        #print("extension du fichier : ", os.path.splitext(chemin_fichier)[1])
-                             
+                       
                        if not chemin_fichier.endswith(".json"):  # Si le chemin du fichier n'a pas d'extension .json
                             chemin_fichier += ".json" # On ajoute l'extension au chemin du fichier
                             #print("chemin du fichier mis à jour :", chemin_fichier)
